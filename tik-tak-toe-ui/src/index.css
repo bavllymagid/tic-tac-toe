@@ -23,9 +23,9 @@ a:hover {
 }
 
 body {
-  margin: 0;
-  align-items: center;
   display: grid;
+  place-items: center;
+  padding-right: 10%;
   min-width: 320px;
   min-height: 100vh;
 }
