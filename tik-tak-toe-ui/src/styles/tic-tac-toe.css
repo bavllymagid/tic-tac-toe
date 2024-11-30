@@ -81,3 +81,64 @@ body {
   font-size: 1.125rem;
   margin-top: 24px;
 }
+
+.setup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.setup label {
+  color: white;
+  font-size: 1.125rem;
+  margin-bottom: 8px;
+}
+
+.setup input {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  border: 2px solid white;
+  background-color: transparent;
+  color: white;
+  text-align: center;
+}
+
+.setup button {
+  margin-top: 16px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background-color: transparent;
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+.setup button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.setup button:focus {
+  outline: none;
+}
+
+.setup button:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    width: 240px;
+    height: 240px;
+  }
+
+  .square {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+
