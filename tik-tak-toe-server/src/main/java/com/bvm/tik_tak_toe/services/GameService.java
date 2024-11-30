@@ -1,44 +1,33 @@
 package com.bvm.tik_tak_toe.services;
 
-import com.bvm.tik_tak_toe.dto.Session;
-import com.bvm.tik_tak_toe.exceptions.InvalidMoveException;
-import com.bvm.tik_tak_toe.model.Board;
-import com.bvm.tik_tak_toe.model.Game;
-import com.bvm.tik_tak_toe.model.Player;
+import com.bvm.tik_tak_toe.model.GameState;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class GameService {
-    public Session processMove(Game game, Player player, int row, int col) throws InvalidMoveException {
-        Board board = Board.getInstance(game);
-        if (!board.move(row, col, player)) {
-            throw new InvalidMoveException("Invalid move");
-        }
 
-        int winner = board.checkWin();
-        if (winner != 0) {
-            game.setWinner(winner);
-        }
+    private final Map<String, GameState> games = new ConcurrentHashMap<>();
 
-        if (game.getWinner() == 0) {
-            game.setNextPlayer(game.getNextPlayer() == game.getFirstPlayer() ? game.getSecondPlayer() : game.getFirstPlayer());
-        }
-
-        return new Session(game, board);
+    public GameState createGame() {
+        GameState newGame = new GameState();
+        newGame.setGameId(UUID.randomUUID().toString());
+        games.put(newGame.getGameId(), newGame);
+        return newGame;
     }
 
-    public Game createGame(Player firstPlayer) {
-        Game game = new Game();
-        game.setGameId(UUID.randomUUID().toString());
-        game.setFirstPlayer(firstPlayer);
-        Board.getInstance(game);
-        return game;
+    public void endGame(String gameId) {
+        games.remove(gameId);
     }
 
-    public Game joinGame(Game game, Player SecondPlayer) {
-        game.setSecondPlayer(SecondPlayer);
-        return game;
+    public GameState getGame(String gameId) {
+        return games.get(gameId);
+    }
+
+    public void updateGame(String gameId, GameState gameState) {
+        games.put(gameId, gameState);
     }
 }

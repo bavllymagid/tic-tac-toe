@@ -1,27 +1,39 @@
 package com.bvm.tik_tak_toe.controllers;
 
-import com.bvm.tik_tak_toe.dto.Session;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
 
-@Controller
+import com.bvm.tik_tak_toe.model.GameState;
+import com.bvm.tik_tak_toe.services.GameService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/tic-tac-toe")
 public class GameController {
-    @MessageMapping("/game")
-    @SendTo("/topic/game")
-    public Session processMove(Session session) {
-        return new Session(session.getGame(), session.getBoard());
+    private final GameService gameService;
+
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
     }
 
-    @MessageMapping("/game/create")
-    @SendTo("/topic/game")
-    public Session createGame(Session session) {
-        return new Session(session.getGame(), session.getBoard());
+    @GetMapping("/create")
+    public ResponseEntity<GameState> createGame() {
+        GameState game = gameService.createGame();
+        return ResponseEntity.ok(game);
     }
 
-    @MessageMapping("/game/join")
-    @SendTo("/topic/game")
-    public Session joinGame(Session session) {
-        return new Session(session.getGame(), session.getBoard());
+    @GetMapping("/join/{gameId}")
+    public ResponseEntity<GameState> joinGame(@PathVariable String gameId) {
+        GameState gameState = gameService.getGame(gameId);
+        if (gameState != null) {
+            return ResponseEntity.ok(gameState);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @DeleteMapping("/over/{gameId}")
+    public ResponseEntity<Void> endGame(@PathVariable String gameId) {
+        gameService.endGame(gameId);
+        return ResponseEntity.noContent().build();
     }
 }
