@@ -16,12 +16,14 @@ public class GameController {
         this.gameService = gameService;
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/create")
     public ResponseEntity<GameState> createGame() {
         GameState game = gameService.createGame();
         return ResponseEntity.ok(game);
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/join/{gameId}")
     public ResponseEntity<GameState> joinGame(@PathVariable String gameId) {
         GameState gameState = gameService.getGame(gameId);
@@ -31,6 +33,7 @@ public class GameController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @DeleteMapping("/over/{gameId}")
     public ResponseEntity<Void> endGame(@PathVariable String gameId) {
         gameService.endGame(gameId);
