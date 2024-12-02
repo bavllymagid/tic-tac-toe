@@ -3,6 +3,8 @@ package com.bvm.tik_tak_toe.controllers;
 
 import com.bvm.tik_tak_toe.model.GameState;
 import com.bvm.tik_tak_toe.services.GameService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/tic-tac-toe")
 public class GameController {
+    private static final Logger log = LoggerFactory.getLogger(GameController.class);
     private final GameService gameService;
 
     public GameController(GameService gameService) {
@@ -28,6 +31,7 @@ public class GameController {
     public ResponseEntity<GameState> joinGame(@PathVariable String gameId) {
         GameState gameState = gameService.getGame(gameId);
         if (gameState != null) {
+            log.info("Player joined game with id: {}", gameId);
             return ResponseEntity.ok(gameState);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

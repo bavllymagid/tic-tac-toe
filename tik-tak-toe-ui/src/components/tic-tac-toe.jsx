@@ -15,6 +15,7 @@ const TicTacToe = () => {
   // Handle user moves
   const handleClick = (i) => {
     if (gameOver || squares[i] || !gameId) {
+      console.log(`Invalid move ${gameId}`);
       return;
     }
     const row = Math.floor(i / 3);
@@ -38,10 +39,10 @@ const TicTacToe = () => {
   const handleCreateGame = async () => {
     try {
       const game = await createGame();
-      setGameId(game.id);
+      setGameId(game.gameId);
       setIsGameJoined(true);
       setStatus("Waiting for opponent...");
-      console.log("Game created:", game.id);
+      console.log("Game created:", gameId);
     } catch (error) {
       console.error("Error creating game:", error);
     }
@@ -107,13 +108,16 @@ const TicTacToe = () => {
       {!isGameJoined ? (
         <div className="setup">
           <button onClick={handleCreateGame}>Create Game</button>
-          <input
+          <br />
+          <div className="joinComp">
+            <input
             type="text"
             value={joinInput}
             onChange={(e) => setJoinInput(e.target.value)}
             placeholder="Enter Game ID"
           />
           <button onClick={handleJoinGame}>Join Game</button>
+          </div>
         </div>
       ) : (
         <>

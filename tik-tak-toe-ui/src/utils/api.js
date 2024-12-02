@@ -3,10 +3,14 @@ const API_BASE = "http://localhost:8080/tic-tac-toe";
 export const createGame = async () => {
   const response = await fetch(`${API_BASE}/create`);
   if (response.ok) {
-    return response.json();
+    const data = await response.json(); // Parse the JSON response
+    console.log("Create Game response:", data); // Log to verify the response
+    return data; // Ensure `data` contains the `id` field
   }
   throw new Error("Failed to create game");
 };
+
+
 
 export const joinGame = async (gameId) => {
   const response = await fetch(`${API_BASE}/join/${gameId}`);
