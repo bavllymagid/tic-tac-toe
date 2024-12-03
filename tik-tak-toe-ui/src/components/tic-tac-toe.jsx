@@ -22,6 +22,7 @@ const TicTacToe = () => {
       return;
     }
     // Send the move to the server
+    console.log(`Processing move in game ${gameId} with coordinates: (${row}, ${col})`);
     processMove(gameId, row, col);
     // Switch the turn to the opponent
     setCurrentTurn(player === "X" ? "O" : "X");
@@ -105,9 +106,9 @@ const TicTacToe = () => {
 
   const renderSquare = (i) => {
     return (
-      <button key={i} className="square" onClick={() => handleClick(i)}>
+      <div key={i} className="square" onClick={() => handleClick(Math.floor(i / 3), i % 3)}>
         {grid[Math.floor(i / 3)][i % 3]}
-      </button>
+      </div>
     );
   };
 
