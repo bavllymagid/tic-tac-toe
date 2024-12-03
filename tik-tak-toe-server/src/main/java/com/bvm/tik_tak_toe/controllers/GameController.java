@@ -1,8 +1,9 @@
 package com.bvm.tik_tak_toe.controllers;
 
 
+import com.bvm.tik_tak_toe.exceptions.exception.NoSuchGameFoundException;
 import com.bvm.tik_tak_toe.model.GameState;
-import com.bvm.tik_tak_toe.services.GameService;
+import com.bvm.tik_tak_toe.services.GameServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/tic-tac-toe")
 public class GameController {
     private static final Logger log = LoggerFactory.getLogger(GameController.class);
-    private final GameService gameService;
+    private final GameServiceImpl gameService;
 
-    public GameController(GameService gameService) {
+    public GameController(GameServiceImpl gameService) {
         this.gameService = gameService;
     }
 
@@ -28,15 +29,9 @@ public class GameController {
 
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/join/{gameId}")
-    public ResponseEntity<GameState> joinGame(@PathVariable String gameId) {
-        GameState gameState = gameService.getGame(gameId);
-        if (gameState != null) {
-            log.info("Player joined game with id: {}", gameId);
-            gameState.setPlayer2(gameState.getGameId()+"- O");
-            gameState.setCurrentPlayer("X");
-            return ResponseEntity.ok(gameState);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<GameState> joinGame(@PathVariable String gameId) throws NoSuchGameFoundException {
+        GameState gameState = gameService.joinGame(gameId);
+        return ResponseEntity.ok(gameState);
     }
 
     @CrossOrigin(origins = "http://localhost:5173")
