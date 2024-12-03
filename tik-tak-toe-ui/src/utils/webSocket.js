@@ -7,8 +7,8 @@ let stompClient = null;
  * @param {string} gameId - The ID of the game to subscribe to.
  * @param {function} onMessageReceived - Callback for receiving game state updates.
  */
-export const connectToWebSocket = (gameId, onMessageReceived) => {
-  const socket = new WebSocket("ws://localhost:8080/tic-tac-toe");
+export const connectToWebSocket = (gameId, onMessageReceived, onOpen) => {
+  const socket = new WebSocket("ws://localhost:8080/ws");
   stompClient = over(socket);
 
   stompClient.connect({}, () => {
@@ -16,9 +16,23 @@ export const connectToWebSocket = (gameId, onMessageReceived) => {
 
     // Subscribe to updates for the specific game
     stompClient.subscribe(`/topic/game/${gameId}`, (message) => {
+      console.log("Received message:", message.body);
       onMessageReceived(JSON.parse(message.body));
     });
+    onOpen();
   });
+};
+
+export const wsJoinGame = (gameId) => {
+  console.log("Joining game:", gameId, "i got called");
+  if (!stompClient || !stompClient.connected) {
+    console.error("WebSocket is not connected. Cannot send join status.");
+    return;
+  }
+  stompClient.send(
+    `/app/join/${gameId}`,
+    {},
+  );
 };
 
 /**
@@ -28,13 +42,13 @@ export const connectToWebSocket = (gameId, onMessageReceived) => {
  * @param {number} col - The column index of the move.
  */
 export const processMove = (gameId, row, col) => {
-    if (!stompClient || !stompClient.connected) {
-        console.error("WebSocket is not connected. Cannot send move.");
-        return;
-        }
+  if (!stompClient || !stompClient.connected) {
+    console.error("WebSocket is not connected. Cannot send move.");
+    return;
+  }
   stompClient.send(
     `/app/move/${gameId}`,
-    {},
-    JSON.stringify({ row, col })
+    {}, // Headers (empty in this case)
+    JSON.stringify({ row, col }) // Payload
   );
 };

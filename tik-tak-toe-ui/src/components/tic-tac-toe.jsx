@@ -1,39 +1,45 @@
 import { useState, useEffect } from "react";
-import { connectToWebSocket, processMove } from "../utils/webSocket"; // WebSocket helpers
+import { connectToWebSocket, processMove, wsJoinGame} from "../utils/webSocket"; // WebSocket helpers
 import { createGame, joinGame, endGame } from "../utils/api"; // API helpers
 import "../styles/tic-tac-toe.css";
 
 const TicTacToe = () => {
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [status, setStatus] = useState("Next player: X");
+  const [grid, setGrid] = useState(Array(3).fill(Array(3).fill("")));
+  const [status, setStatus] = useState("Waiting for player...");
   const [gameOver, setGameOver] = useState(false);
   const [timerCnt, setTimerCnt] = useState(3);
   const [gameId, setGameId] = useState(null);
   const [isGameJoined, setIsGameJoined] = useState(false);
   const [joinInput, setJoinInput] = useState("");
+  const [player, setPlayer] = useState("Waiting for opponent...");
+  const [currentTurn, setCurrentTurn] = useState(null); // Tracks whose turn it is
 
   // Handle user moves
-  const handleClick = (i) => {
-    if (gameOver || squares[i] || !gameId) {
-      console.log(`Invalid move ${gameId}`);
+  const handleClick = (row,col) => {
+    if (gameOver || grid[row][col] || currentTurn !== player) {
+      console.log(gameOver, grid[row][col], currentTurn, player);
+      console.log(`Invalid move in game ${gameId}`);
       return;
     }
-    const row = Math.floor(i / 3);
-    const col = i % 3;
-    processMove(gameId, row, col); // Send move via WebSocket
+    // Send the move to the server
+    processMove(gameId, row, col);
+    // Switch the turn to the opponent
+    setCurrentTurn(player === "X" ? "O" : "X");
+    setStatus(player === "X" ? "Next player: O" : "Next player: X");
   };
 
   // Reset game state
   const resetGame = () => {
-    setSquares(Array(9).fill(null));
-    setStatus("Next player: X");
+    setStatus("player: X");
     setGameOver(false);
     setTimerCnt(3);
+    setCurrentTurn(null);
     if (gameId) {
       endGame(gameId).catch((error) => console.error("Failed to end game:", error));
       setGameId(null);
     }
   };
+
 
   // Create a new game
   const handleCreateGame = async () => {
@@ -41,7 +47,7 @@ const TicTacToe = () => {
       const game = await createGame();
       setGameId(game.gameId);
       setIsGameJoined(true);
-      setStatus("Waiting for opponent...");
+      setPlayer(game.player1.charAt(game.player1.length - 1));
       console.log("Game created:", gameId);
     } catch (error) {
       console.error("Error creating game:", error);
@@ -52,9 +58,13 @@ const TicTacToe = () => {
   const handleJoinGame = async () => {
     try {
       const game = await joinGame(joinInput);
-      setGameId(game.id);
+      setGameId(game.gameId);
       setIsGameJoined(true);
-      setStatus("Game joined. Your move!");
+      setPlayer(game.player2.charAt(game.player2.length - 1));
+      setCurrentTurn("X");
+      setStatus(`Player ${currentTurn} Turn`);
+      console.log("Game joined:", gameId);
+
     } catch (error) {
       console.error("Error joining game:", error);
     }
@@ -62,17 +72,15 @@ const TicTacToe = () => {
 
   useEffect(() => {
     if (gameId) {
-      connectToWebSocket((newGameState) => {
-        setSquares(newGameState.board.flat());
-        if (newGameState.winner) {
-          setStatus(`Winner: ${newGameState.winner}`);
-          setGameOver(true);
-        } else if (newGameState.isDraw) {
-          setStatus("Draw!");
-          setGameOver(true);
-        } else {
-          setStatus(`Next player: ${newGameState.currentPlayer}`);
-        }
+      connectToWebSocket(gameId,
+         (gameState) => {
+        setGrid(gameState.board);
+        setGameOver(gameState.gameOver);
+        setCurrentTurn(gameState.currentPlayer);
+        setStatus(`Player ${currentTurn} Turn`)
+        console.log("Game state updated:", gameState);
+      }, () => {
+        wsJoinGame(gameId);
       });
     }
   }, [gameId]);
@@ -98,7 +106,7 @@ const TicTacToe = () => {
   const renderSquare = (i) => {
     return (
       <button key={i} className="square" onClick={() => handleClick(i)}>
-        {squares[i]}
+        {grid[Math.floor(i / 3)][i % 3]}
       </button>
     );
   };
@@ -111,21 +119,22 @@ const TicTacToe = () => {
           <br />
           <div className="joinComp">
             <input
-            type="text"
-            value={joinInput}
-            onChange={(e) => setJoinInput(e.target.value)}
-            placeholder="Enter Game ID"
-          />
-          <button onClick={handleJoinGame}>Join Game</button>
+              type="text"
+              value={joinInput}
+              onChange={(e) => setJoinInput(e.target.value)}
+              placeholder="Enter Game ID"
+            />
+            <button onClick={handleJoinGame}>Join Game</button>
           </div>
         </div>
       ) : (
         <>
           <div className="status">{status}</div>
-          <div className="grid">{squares.map((_, index) => renderSquare(index))}</div>
+          <div className="grid">{grid.map((row, i) => row.map((_, j) => renderSquare(i * 3 + j)))}</div>
           {gameOver && (
             <div className="resetMessage">Game will reset in {timerCnt} seconds...</div>
           )}
+          <div className="status"> Player : {player}</div>
         </>
       )}
     </div>
