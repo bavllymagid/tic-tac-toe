@@ -32,6 +32,8 @@ public class GameController {
         GameState gameState = gameService.getGame(gameId);
         if (gameState != null) {
             log.info("Player joined game with id: {}", gameId);
+            gameState.setPlayer2(gameState.getGameId()+"- O");
+            gameState.setCurrentPlayer("X");
             return ResponseEntity.ok(gameState);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

@@ -2,10 +2,6 @@ package com.bvm.tik_tak_toe.model;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 @Data
 public class GameState {
     private String gameId;
@@ -13,21 +9,20 @@ public class GameState {
     private String currentPlayer;
     private String winner;
     private boolean isDraw;
-    private List<String> players;
+    private String player1;
+    private String player2;
 
     public GameState() {
-        this.board = new String[3][3];
-        this.currentPlayer = new Random().nextBoolean() ? "X" : "O";
-        this.winner = null;
+        populateGrid();
+        this.winner = "";
         this.isDraw = false;
-        this.players = new ArrayList<>();
     }
 
-    public boolean makeMove(int row, int col) {
-        if (board[row][col] == null && winner == null) {
+    public boolean makeMove(int col, int row) {
+        if (board[row][col].isEmpty() && winner.isEmpty()) {
             board[row][col] = currentPlayer;
             checkGameStatus();
-            currentPlayer = currentPlayer.equals("X") ? "O" : "X";
+            currentPlayer = currentPlayer.equalsIgnoreCase("X") ? "O" : "X";
             return true;
         }
         return false;
@@ -55,6 +50,15 @@ public class GameState {
         }
         else {
             isDraw = true;
+        }
+    }
+
+    private void populateGrid() {
+        board = new String[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j] = "";
+            }
         }
     }
 }

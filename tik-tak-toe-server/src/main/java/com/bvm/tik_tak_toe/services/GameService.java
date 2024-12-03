@@ -18,6 +18,7 @@ public class GameService {
     public GameState createGame() {
         GameState newGame = new GameState();
         newGame.setGameId(UUID.randomUUID().toString());
+        newGame.setPlayer1(newGame.getGameId()+"-X");
         games.put(newGame.getGameId(), newGame);
         log.info("Created new game with id: {}", newGame.getGameId());
         return newGame;
