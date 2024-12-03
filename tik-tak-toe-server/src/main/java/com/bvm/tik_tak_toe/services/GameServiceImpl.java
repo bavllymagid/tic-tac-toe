@@ -80,10 +80,10 @@ public class GameServiceImpl implements GameService {
                 && gameState.getPlayer2() == null) {
             return false;
         }
-        if (boardManager.checkIsWinner(gameState.getBoard())) {
-            gameState.setWinner(gameState.getBoard()[move.getRow()][move.getCol()]);
-        } else {
+        if (boardManager.checkIsDraw(gameState.getBoard())) {
             gameState.setDraw(true);
+        } else if (boardManager.checkIsWinner(gameState.getBoard())) {
+            gameState.setWinner(gameState.getBoard()[move.getRow()][move.getCol()]);
         }
         return true;
     }

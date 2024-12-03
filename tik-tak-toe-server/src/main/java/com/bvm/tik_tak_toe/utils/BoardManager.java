@@ -30,6 +30,21 @@ public class BoardManager {
         if (board[0][0] != null && board[0][0].equals(board[1][1]) && board[0][0].equals(board[2][2])) {
             return true;
         }
-        else return board[0][2] != null && board[0][2].equals(board[1][1]) && board[0][2].equals(board[2][0]);
+        else if (board[0][2] != null && board[0][2].equals(board[1][1]) && board[0][2].equals(board[2][0])){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean checkIsDraw(String[][] board) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
