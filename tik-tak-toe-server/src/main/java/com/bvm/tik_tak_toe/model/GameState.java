@@ -18,7 +18,7 @@ public class GameState {
         this.isDraw = false;
     }
 
-    public boolean makeMove(int col, int row) {
+    public boolean makeMove(int row, int col) {
         if (board[row][col].isEmpty() && winner.isEmpty()) {
             board[row][col] = currentPlayer;
             checkGameStatus();
