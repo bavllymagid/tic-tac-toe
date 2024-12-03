@@ -20,6 +20,20 @@ body {
   padding: 16px;
 }
 
+.gameId {
+  color: white;
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+  align-items: start;
+}
+
+.gameId span {
+  color: #ff8c00;
+  font-weight: lighter;
+  font-size: small;
+}
+
 .status {
   margin-bottom: 16px;
   color: white;

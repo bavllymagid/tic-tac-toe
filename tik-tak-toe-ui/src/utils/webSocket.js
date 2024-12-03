@@ -52,3 +52,9 @@ export const processMove = (gameId, row, col) => {
     JSON.stringify({ row, col }) // Payload
   );
 };
+
+export const disconnectWebSocket = () => {
+  if (stompClient) {
+    stompClient.disconnect();
+  }
+}
