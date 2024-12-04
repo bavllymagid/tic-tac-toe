@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8080/tic-tac-toe";
+const API_BASE = "http://34.155.145.29:8080/tic-tac-toe";
 
 export const createGame = async () => {
   const response = await fetch(`${API_BASE}/create`);
