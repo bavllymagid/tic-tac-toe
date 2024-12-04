@@ -68,24 +68,24 @@ public class GameServiceImpl implements GameService {
         if (gameState == null) {
             throw new NoSuchGameFoundException("No such game found");
         }
+
         if(!processMove(gameState, move)) {
             throw new InvalidMoveException("Invalid move");
         }
-        games.put(gameId, gameState);
-        return gameState;
-    }
 
-    private boolean processMove(GameState gameState, GameMove move){
-        if (!boardManager.makeMove(gameState,move.getRow(), move.getCol())
-                && gameState.getPlayer2() == null) {
-            return false;
-        }
         if (boardManager.checkIsDraw(gameState.getBoard())) {
             gameState.setDraw(true);
         } else if (boardManager.checkIsWinner(gameState.getBoard())) {
             gameState.setWinner(gameState.getBoard()[move.getRow()][move.getCol()]);
         }
-        return true;
+
+        games.put(gameId, gameState);
+        return gameState;
+    }
+
+    private boolean processMove(GameState gameState, GameMove move){
+        return boardManager.makeMove(gameState, move.getRow(), move.getCol())
+                || gameState.getPlayer2() != null;
     }
 
 

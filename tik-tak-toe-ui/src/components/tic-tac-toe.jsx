@@ -31,10 +31,11 @@ const TicTacToe = () => {
   const resetGame = () => {
     setWinner(null);
     setIsDraw(false);
-    setTimerCnt(3);
+    setTimerCnt(4);
     setCurrentTurn("");
     setIsGameJoined(false);
     setJoinInput("");
+    setGrid(Array(3).fill(Array(3).fill("")));
     if (gameId) {
       endGame(gameId).catch((error) => console.error("Failed to end game:", error));
       setGameId(null);
@@ -90,26 +91,31 @@ const TicTacToe = () => {
   }, [gameId]);
 
   useEffect(() => {
-    console.log("Game over:", winner, isDraw);
-    if (winner != "" || isDraw) {
+    if (winner !== "" || isDraw) {
       console.log("Game over:", winner, isDraw);
-      if (winner != "")setStatus(`Player ${winner} Wins`);
+  
+      // Set the status message based on the game outcome
+      if (winner !== "") setStatus(`Player ${winner} Wins`);
       else setStatus("Game Draw");
-      const timer = setTimeout(() => {
+  
+      // Initialize the timer countdown
+      setTimerCnt(3);
+      const interval = setInterval(() => {
+        setTimerCnt((prev) => Math.max(prev - 1, 0)); // Prevent timer going negative
+      }, 1000);
+  
+      // Set a timeout to reset the game after 3 seconds
+      const timeout = setTimeout(() => {
         resetGame();
       }, 3000);
-      return () => clearTimeout(timer);
+  
+      // Cleanup function to clear both interval and timeout
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
     }
   }, [winner, isDraw]);
-
-  useEffect(() => {
-    if (winner != "" || isDraw) {
-      const timer = setInterval(() => {
-        setTimerCnt((prevCount) => prevCount - 1);
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [winner, timerCnt, isDraw]);
 
   const renderSquare = (i) => {
     return (
@@ -142,7 +148,7 @@ const TicTacToe = () => {
           </div>
           <div className="status">{status}</div>
           <div className="grid">{grid.map((row, i) => row.map((_, j) => renderSquare(i * 3 + j)))}</div>
-          {winner != "" && (
+          {(winner != "" || isDraw )&& (
             <div className="resetMessage">Game will reset in {timerCnt} seconds...</div>
           )}
           <div className="status"> Player : {player}</div>

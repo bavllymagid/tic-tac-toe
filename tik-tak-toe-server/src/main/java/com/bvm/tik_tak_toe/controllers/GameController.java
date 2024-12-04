@@ -6,7 +6,6 @@ import com.bvm.tik_tak_toe.model.GameState;
 import com.bvm.tik_tak_toe.services.GameServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,21 +19,21 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(originPatterns = "*")
     @GetMapping("/create")
     public ResponseEntity<GameState> createGame() {
         GameState game = gameService.createGame();
         return ResponseEntity.ok(game);
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(originPatterns = "*")
     @GetMapping("/join/{gameId}")
     public ResponseEntity<GameState> joinGame(@PathVariable String gameId) throws NoSuchGameFoundException {
         GameState gameState = gameService.joinGame(gameId);
         return ResponseEntity.ok(gameState);
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(originPatterns = "*")
     @DeleteMapping("/over/{gameId}")
     public ResponseEntity<Void> endGame(@PathVariable String gameId) {
         gameService.endGame(gameId);

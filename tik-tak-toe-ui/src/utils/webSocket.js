@@ -58,3 +58,11 @@ export const disconnectWebSocket = () => {
     stompClient.disconnect();
   }
 }
+
+
+export const checkConnection = () => {
+  if (stompClient) {
+    return true;
+  }
+  return false;
+};
