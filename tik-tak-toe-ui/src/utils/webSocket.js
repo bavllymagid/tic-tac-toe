@@ -8,7 +8,7 @@ let stompClient = null;
  * @param {function} onMessageReceived - Callback for receiving game state updates.
  */
 export const connectToWebSocket = (gameId, onMessageReceived, onOpen) => {
-  const socket = new WebSocket("ws://34.155.145.29:8080/ws");
+  const socket = new WebSocket("wss://34.155.145.29:8080/ws");
   stompClient = over(socket);
 
   stompClient.connect({}, () => {
