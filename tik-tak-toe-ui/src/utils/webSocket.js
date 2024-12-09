@@ -1,14 +1,13 @@
 import { over } from "stompjs";
 
 let stompClient = null;
-
 /**
  * Establish a WebSocket connection and subscribe to game updates.
  * @param {string} gameId - The ID of the game to subscribe to.
  * @param {function} onMessageReceived - Callback for receiving game state updates.
  */
 export const connectToWebSocket = (gameId, onMessageReceived, onOpen) => {
-  const socket = new WebSocket("wss://34.155.145.29:8080/ws");
+  const socket = new WebSocket("ws://localhost:8080/ws");
   stompClient = over(socket);
 
   stompClient.connect({}, () => {

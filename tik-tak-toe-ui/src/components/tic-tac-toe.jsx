@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { connectToWebSocket, processMove, wsJoinGame, disconnectWebSocket} from "../utils/webSocket"; // WebSocket helpers
-import { createGame, joinGame, endGame } from "../utils/api"; // API helpers
+import { connectToWebSocket, processMove, wsJoinGame, disconnectWebSocket} from "../utils/webSocket";
+import { createGame, joinGame, endGame } from "../utils/api";
 import "../styles/tic-tac-toe.css";
 
 const TicTacToe = () => {
@@ -43,6 +43,55 @@ const TicTacToe = () => {
     disconnectWebSocket();
   };
 
+  // Decide the winner status
+  const decideWinner = (winner, isDraw) => {
+    if (winner !== "" || isDraw) {
+      console.log("Game over:", winner, isDraw);
+      
+      if (winner !== "") {
+        setStatus(`Player ${winner} Wins`);
+      } else {
+        setStatus("Game Draw");
+      }
+      
+      setTimerCnt(3);
+      
+      const startTime = Date.now();
+      const interval = setInterval(() => {
+        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        const remainingSeconds = Math.max(3 - elapsedSeconds, 0);
+        setTimerCnt(remainingSeconds);
+        
+        if (remainingSeconds === 0) {
+          clearInterval(interval);
+        }
+      }, 1000);
+  
+      const timeout = setTimeout(() => {
+        clearInterval(interval);
+        resetGame();
+      }, 3000);
+  
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
+    }
+  };
+
+  // Update game state
+  const setState = (gameState) => {
+    setGrid(gameState.board);
+        setWinner(gameState.winner);
+        setCurrentTurn(gameState.currentPlayer);
+        setIsDraw(gameState.draw);
+        if(gameState.currentPlayer == player )
+          setStatus(`Player ${gameState.currentPlayer} Turn`)
+        else 
+          setStatus("Waiting for player...");
+        console.log("Game state updated:", gameState);
+  };
+
 
   // Create a new game
   const handleCreateGame = async () => {
@@ -75,47 +124,14 @@ const TicTacToe = () => {
     if (gameId) {
       connectToWebSocket(gameId,
          (gameState) => {
-        setGrid(gameState.board);
-        setWinner(gameState.winner);
-        setCurrentTurn(gameState.currentPlayer);
-        setIsDraw(gameState.draw);
-        if(gameState.currentPlayer == player )
-          setStatus(`Player ${gameState.currentPlayer} Turn`)
-        else 
-          setStatus("Waiting for player...");
-        console.log("Game state updated:", gameState);
+          setState(gameState);
+          decideWinner(gameState.winner, gameState.draw);
       }, () => {
         wsJoinGame(gameId);
       });
     }
   }, [gameId]);
 
-  useEffect(() => {
-    if (winner !== "" || isDraw) {
-      console.log("Game over:", winner, isDraw);
-  
-      // Set the status message based on the game outcome
-      if (winner !== "") setStatus(`Player ${winner} Wins`);
-      else setStatus("Game Draw");
-  
-      // Initialize the timer countdown
-      setTimerCnt(3);
-      const interval = setInterval(() => {
-        setTimerCnt((prev) => Math.max(prev - 1, 0)); // Prevent timer going negative
-      }, 1000);
-  
-      // Set a timeout to reset the game after 3 seconds
-      const timeout = setTimeout(() => {
-        resetGame();
-      }, 3000);
-  
-      // Cleanup function to clear both interval and timeout
-      return () => {
-        clearInterval(interval);
-        clearTimeout(timeout);
-      };
-    }
-  }, [winner, isDraw]);
 
   const renderSquare = (i) => {
     return (
