@@ -1,6 +1,9 @@
 # Tic-Tac-Toe
 A full-stack Tic-Tac-Toe game built using React.js for the frontend and Spring Boot for the backend.
 
+<img src="./images/menu.png">
+<img src="./images/game.png">
+
 ## Features
 - Interactive UI built with React.js.
 - Backend API powered by Spring Boot.
