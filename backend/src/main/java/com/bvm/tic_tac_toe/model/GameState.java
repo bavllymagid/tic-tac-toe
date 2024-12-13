@@ -1,4 +1,4 @@
-package com.bvm.tik_tak_toe.model;
+package com.bvm.tic_tac_toe.model;
 
 import lombok.Data;
 

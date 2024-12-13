@@ -1,11 +1,12 @@
-package com.bvm.tik_tak_toe.utils;
-import com.bvm.tik_tak_toe.model.GameState;
+package com.bvm.tic_tac_toe.utils;
+
+import com.bvm.tic_tac_toe.model.GameState;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BoardManager {
 
-    public boolean makeMove(GameState gameState,int row, int col) {
+    public boolean makeMove(GameState gameState, int row, int col) {
         String[][] board = gameState.getBoard();
         if (board[row][col] == null && gameState.getWinner().isEmpty()) {
             board[row][col] = gameState.getCurrentPlayer();
@@ -16,7 +17,7 @@ public class BoardManager {
     }
 
     public boolean checkIsWinner(String[][] board) {
-        //check rows, columns
+        // check rows, columns
         for (int i = 0; i < 3; i++) {
             if (board[i][0] != null && board[i][0].equals(board[i][1]) && board[i][0].equals(board[i][2])) {
                 return true;
@@ -26,11 +27,10 @@ public class BoardManager {
             }
         }
 
-        //check diagonals
+        // check diagonals
         if (board[0][0] != null && board[0][0].equals(board[1][1]) && board[0][0].equals(board[2][2])) {
             return true;
-        }
-        else if (board[0][2] != null && board[0][2].equals(board[1][1]) && board[0][2].equals(board[2][0])){
+        } else if (board[0][2] != null && board[0][2].equals(board[1][1]) && board[0][2].equals(board[2][0])) {
             return true;
         }
 

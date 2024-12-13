@@ -1,4 +1,4 @@
-package com.bvm.tik_tak_toe.configuration;
+package com.bvm.tic_tac_toe.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

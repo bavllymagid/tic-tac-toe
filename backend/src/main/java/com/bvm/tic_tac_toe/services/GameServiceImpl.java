@@ -1,10 +1,10 @@
-package com.bvm.tik_tak_toe.services;
+package com.bvm.tic_tac_toe.services;
 
-import com.bvm.tik_tak_toe.exceptions.exception.InvalidMoveException;
-import com.bvm.tik_tak_toe.exceptions.exception.NoSuchGameFoundException;
-import com.bvm.tik_tak_toe.model.GameMove;
-import com.bvm.tik_tak_toe.model.GameState;
-import com.bvm.tik_tak_toe.utils.BoardManager;
+import com.bvm.tic_tac_toe.exceptions.exception.InvalidMoveException;
+import com.bvm.tic_tac_toe.exceptions.exception.NoSuchGameFoundException;
+import com.bvm.tic_tac_toe.model.GameMove;
+import com.bvm.tic_tac_toe.model.GameState;
+import com.bvm.tic_tac_toe.utils.BoardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class GameServiceImpl implements GameService {
     private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
     private final Map<String, GameState> games = new ConcurrentHashMap<>();
     private final BoardManager boardManager;
-    
+
     @Autowired
     public GameServiceImpl(BoardManager boardManager) {
         this.boardManager = boardManager;
@@ -31,7 +31,7 @@ public class GameServiceImpl implements GameService {
     public GameState createGame() {
         GameState newGame = new GameState();
         newGame.setGameId(UUID.randomUUID().toString());
-        newGame.setPlayer1(newGame.getGameId()+"-X");
+        newGame.setPlayer1(newGame.getGameId() + "-X");
         games.put(newGame.getGameId(), newGame);
         log.info("Created new game with id: {}", newGame.getGameId());
         return newGame;
@@ -42,10 +42,10 @@ public class GameServiceImpl implements GameService {
         GameState gameState = getGame(gameId);
         if (gameState != null) {
             log.info("Player joined game with id: {}", gameId);
-            gameState.setPlayer2(gameState.getGameId()+"- O");
+            gameState.setPlayer2(gameState.getGameId() + "- O");
             gameState.setCurrentPlayer("X");
             return gameState;
-        }else {
+        } else {
             throw new NoSuchGameFoundException("No such game found");
         }
     }
@@ -69,7 +69,7 @@ public class GameServiceImpl implements GameService {
             throw new NoSuchGameFoundException("No such game found");
         }
 
-        if(!processMove(gameState, move)) {
+        if (!processMove(gameState, move)) {
             throw new InvalidMoveException("Invalid move");
         }
 
@@ -83,10 +83,9 @@ public class GameServiceImpl implements GameService {
         return gameState;
     }
 
-    private boolean processMove(GameState gameState, GameMove move){
+    private boolean processMove(GameState gameState, GameMove move) {
         return boardManager.makeMove(gameState, move.getRow(), move.getCol())
                 || gameState.getPlayer2() != null;
     }
-
 
 }

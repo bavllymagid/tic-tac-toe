@@ -16,7 +16,7 @@ A full-stack Tic-Tac-Toe game built using React.js for the frontend and Spring B
 - Maven for dependency management.
 ## Installation
 - Backend (Spring Boot)
-  - Navigate to the [tik-tak-toe-server](tik-tak-toe-server) directory:
+  - Navigate to the [backend](backend) directory:
 
     ``` bash
     cd backend
@@ -30,7 +30,7 @@ A full-stack Tic-Tac-Toe game built using React.js for the frontend and Spring B
     mvn spring-boot:run
     ```
 - Frontend (React)
-  - Navigate to the [tik-tak-toe-ui](tik-tak-toe-ui) directory:
+  - Navigate to the [frontend](frontend) directory:
     ``` bash
     cd frontend
     ```

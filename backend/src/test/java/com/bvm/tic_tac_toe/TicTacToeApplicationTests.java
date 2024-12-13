@@ -1,10 +1,10 @@
-package com.bvm.tik_tak_toe;
+package com.bvm.tic_tac_toe;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TikTakToeApplicationTests {
+class TicTacToeApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.bvm</groupId>
-	<artifactId>tik-tak-toe</artifactId>
+	<artifactId>tic-tac-toe</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>tik-tak-toe</name>
-	<description>tik tak toe real time game</description>
+	<name>tic-tac-toe</name>
+	<description>tic tac toe real time game</description>
 	<url/>
 	<licenses>
 		<license/>

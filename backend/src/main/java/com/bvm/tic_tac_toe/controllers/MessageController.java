@@ -1,11 +1,11 @@
-package com.bvm.tik_tak_toe.controllers;
+package com.bvm.tic_tac_toe.controllers;
 
-import com.bvm.tik_tak_toe.exceptions.exception.InvalidMoveException;
-import com.bvm.tik_tak_toe.exceptions.exception.NoSuchGameFoundException;
-import com.bvm.tik_tak_toe.model.GameMove;
-import com.bvm.tik_tak_toe.model.GameState;
-import com.bvm.tik_tak_toe.services.GameServiceImpl;
-import com.bvm.tik_tak_toe.utils.BoardManager;
+import com.bvm.tic_tac_toe.exceptions.exception.InvalidMoveException;
+import com.bvm.tic_tac_toe.exceptions.exception.NoSuchGameFoundException;
+import com.bvm.tic_tac_toe.model.GameMove;
+import com.bvm.tic_tac_toe.model.GameState;
+import com.bvm.tic_tac_toe.services.GameServiceImpl;
+import com.bvm.tic_tac_toe.utils.BoardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,8 @@ public class MessageController {
 
     @MessageMapping("/move/{gameId}")
     @SendTo("/topic/game/{gameId}")
-    public GameState processMove(@DestinationVariable String gameId, @Payload GameMove move) throws InvalidMoveException,
+    public GameState processMove(@DestinationVariable String gameId, @Payload GameMove move)
+            throws InvalidMoveException,
             NoSuchGameFoundException {
         return gameService.updateGame(gameId, move);
     }

@@ -1,9 +1,8 @@
-package com.bvm.tik_tak_toe.controllers;
+package com.bvm.tic_tac_toe.controllers;
 
-
-import com.bvm.tik_tak_toe.exceptions.exception.NoSuchGameFoundException;
-import com.bvm.tik_tak_toe.model.GameState;
-import com.bvm.tik_tak_toe.services.GameServiceImpl;
+import com.bvm.tic_tac_toe.exceptions.exception.NoSuchGameFoundException;
+import com.bvm.tic_tac_toe.model.GameState;
+import com.bvm.tic_tac_toe.services.GameServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;

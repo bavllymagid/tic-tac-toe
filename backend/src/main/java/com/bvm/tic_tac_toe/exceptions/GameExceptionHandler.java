@@ -1,7 +1,7 @@
-package com.bvm.tik_tak_toe.exceptions;
+package com.bvm.tic_tac_toe.exceptions;
 
-import com.bvm.tik_tak_toe.exceptions.body.Commence;
-import com.bvm.tik_tak_toe.exceptions.exception.NoSuchGameFoundException;
+import com.bvm.tic_tac_toe.exceptions.body.Commence;
+import com.bvm.tic_tac_toe.exceptions.exception.NoSuchGameFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
