@@ -1,10 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import TicTacToe from './components/tic-tac-toe.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { SnackbarProvider } from "notistack";
 
-createRoot(document.getElementById('root')).render(
+import "./index.css";
+import { Router } from "./router/Router";
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <TicTacToe />
-  </StrictMode>,
-)
+    <SnackbarProvider
+      anchorOrigin={{
+        horizontal: "right",
+        vertical: "bottom",
+      }}
+    >
+      <Router />
+    </SnackbarProvider>
+  </StrictMode>
+);

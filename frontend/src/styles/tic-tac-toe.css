@@ -48,6 +48,7 @@ body {
   color: #ff8c00;
   font-weight: lighter;
   font-size: clamp(0.8rem, 2vw, 1rem);
+  cursor: pointer;
 }
 
 /* Status display */

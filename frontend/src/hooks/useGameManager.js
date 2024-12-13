@@ -1,30 +1,17 @@
 // hooks/useGameManager.js
-import { useState, useEffect } from 'react';
-import { createGame, joinGame, endGame } from "../utils/api";
-import { connectToWebSocket, wsJoinGame, disconnectWebSocket } from "../utils/webSocket";
+import { useState } from 'react';
+import { createGame, joinGame } from "../utils/api";
+import { useNavigate } from 'react-router';
 
-export const useGameManager = (onGameStateUpdate) => {
-  const [gameId, setGameId] = useState(null);
-  const [isGameJoined, setIsGameJoined] = useState(false);
+export const useGameManager = () => {
   const [joinInput, setJoinInput] = useState("");
-  const [timerCnt, setTimerCnt] = useState(3);
-
-  useEffect(() => {
-    if (gameId) {
-      connectToWebSocket(
-        gameId,
-        onGameStateUpdate,
-        () => wsJoinGame(gameId)
-      );
-    }
-  }, [gameId]);
+  const navigate = useNavigate();
 
   const handleCreateGame = async () => {
     try {
-      const game = await createGame();
-      setGameId(game.gameId);
-      setIsGameJoined(true);
-      return game.player1.charAt(game.player1.length - 1);
+      const { gameId, player1 } = await createGame();
+      sessionStorage.setItem("player", player1);
+      navigate(`/game/${gameId}`)
     } catch (error) {
       console.error("Error creating game:", error);
     }
@@ -32,36 +19,18 @@ export const useGameManager = (onGameStateUpdate) => {
 
   const handleJoinGame = async () => {
     try {
-      const game = await joinGame(joinInput);
-      setGameId(game.gameId);
-      setIsGameJoined(true);
-      return game.player2.charAt(game.player2.length - 1);
+      const { gameId, player2 } = await joinGame(joinInput);
+      sessionStorage.setItem("player", player2);
+      navigate(`/game/${gameId}`)
     } catch (error) {
       console.error("Error joining game:", error);
     }
   };
 
-  const resetGame = () => {
-    setTimerCnt(4);
-    setIsGameJoined(false);
-    setJoinInput("");
-    
-    if (gameId) {
-      endGame(gameId).catch((error) => console.error("Failed to end game:", error));
-      setGameId(null);
-    }
-    disconnectWebSocket();
-  };
-
   return {
-    gameId,
-    isGameJoined,
     joinInput,
-    timerCnt,
     setJoinInput,
-    setTimerCnt,
     handleCreateGame,
     handleJoinGame,
-    resetGame
   };
 };
