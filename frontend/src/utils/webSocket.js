@@ -14,11 +14,13 @@ export const connectToWebSocket = (gameId, onMessageReceived, onOpen) => {
     console.log("Connected to WebSocket");
 
     // Subscribe to updates for the specific game
-    stompClient.subscribe(`/topic/game/${gameId}`, (message) => {
-      console.log("Received message:", message.body);
-      onMessageReceived(JSON.parse(message.body));
-    });
-    onOpen();
+    if(stompClient.connected){
+      stompClient.subscribe(`/topic/game/${gameId}`, (message) => {
+        console.log("Received message:", message.body);
+        onMessageReceived(JSON.parse(message.body));
+      });
+      onOpen();
+    }
   });
 };
 
