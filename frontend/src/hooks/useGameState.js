@@ -39,13 +39,13 @@ export const useGameState = () => {
     try {
       const game = await joinGame(gameId);
       let playerSymbol = sessionStorage.getItem('player');
-
+      console.log("I Have joined the game:", game, playerSymbol);
       if (!playerSymbol || (playerSymbol !== game.player1 && playerSymbol !== game.player2)) {
         playerSymbol = game.player2;
         localStorage.setItem('player', playerSymbol);
       }
-
-      setPlayer(playerSymbol.trim().at(-1));
+      if(playerSymbol !== null)
+        setPlayer(playerSymbol.trim().at(-1));
     } catch (error) {
       enqueueSnackbar(`Error happened while joining the game: ${error.message}`, {
         variant: 'error',

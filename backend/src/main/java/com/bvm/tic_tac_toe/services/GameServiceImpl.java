@@ -21,6 +21,7 @@ public class GameServiceImpl implements GameService {
     private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
     private final Map<String, GameState> games = new ConcurrentHashMap<>();
     private final BoardManager boardManager;
+    private int joinCount = 0;
 
     @Autowired
     public GameServiceImpl(BoardManager boardManager) {
@@ -41,9 +42,13 @@ public class GameServiceImpl implements GameService {
     public GameState joinGame(String gameId) throws NoSuchGameFoundException {
         GameState gameState = getGame(gameId);
         if (gameState != null) {
+            joinCount++;
             log.info("Player joined game with id: {}", gameId);
-            gameState.setPlayer2(gameState.getGameId() + "- O");
-            gameState.setCurrentPlayer("X");
+            if(joinCount > 3) {
+                gameState.setPlayer2(gameState.getGameId() + "-O");
+                gameState.setCurrentPlayer("X");
+                joinCount = 0;
+            }
             return gameState;
         } else {
             throw new NoSuchGameFoundException("No such game found");
