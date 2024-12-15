@@ -8,7 +8,7 @@ public class BoardManager {
 
     public boolean makeMove(GameState gameState, int row, int col) {
         String[][] board = gameState.getBoard();
-        if (board[row][col] == null && gameState.getWinner().isEmpty()) {
+        if ((board[row][col] == null || board[row][col].isEmpty()) && gameState.getWinner().isEmpty()) {
             board[row][col] = gameState.getCurrentPlayer();
             gameState.setCurrentPlayer(gameState.getCurrentPlayer().equalsIgnoreCase("X") ? "O" : "X");
             return true;

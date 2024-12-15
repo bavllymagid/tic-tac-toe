@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,27 +32,43 @@ public class GameServiceImpl implements GameService {
     public GameState createGame() {
         GameState newGame = new GameState();
         newGame.setGameId(UUID.randomUUID().toString());
-        newGame.setPlayer1(newGame.getGameId() + "-X");
+        newGame.setPlayer1(UUID.randomUUID() + "-X");
         games.put(newGame.getGameId(), newGame);
         log.info("Created new game with id: {}", newGame.getGameId());
         return newGame;
     }
 
     @Override
-    public GameState joinGame(String gameId) throws NoSuchGameFoundException {
+    public GameState joinGame(String gameId, String playerId) throws NoSuchGameFoundException {
         GameState gameState = getGame(gameId);
         if (gameState != null) {
-            if(gameState.getPlayer2() != null && !gameState.getPlayer2().isEmpty()) {
+            if(gameState.getPlayer2() != null &&
+                    !gameState.getPlayer2().isEmpty() &&
+                    !rejoin(gameId, playerId)){
                 throw new NoSuchGameFoundException("No such game found");
+            }else{
+                String tempId = gameState.getPlayer1().substring(0, gameState.getPlayer1().indexOf("-"));
+                if(!tempId.equals(playerId) &&
+                        (gameState.getPlayer2() == null || Objects.requireNonNull(gameState.getPlayer2()).isEmpty())){
+                    gameState.setPlayer2(UUID.randomUUID() + "-O");
+                    gameState.setCurrentPlayer("X");
+                }
+                log.info("Player joined game with id: {}", gameState.getGameId());
             }
-            log.info("Player joined game with id: {}", gameId);
-            gameState.setPlayer2(gameState.getGameId() + "-O");
-            gameState.setCurrentPlayer("X");
             return gameState;
         } else {
             throw new NoSuchGameFoundException("No such game found");
         }
     }
+
+
+    private boolean rejoin(String gameId, String playerId){
+        GameState gameState = getGame(gameId);
+        String player1 = gameState.getPlayer1().substring(0, gameState.getPlayer1().indexOf("-"));
+        String player2 = gameState.getPlayer2().substring(0, gameState.getPlayer2().indexOf("-"));
+        return player1.equals(playerId) || player2.equals(playerId);
+    }
+
 
     @Override
     public void endGame(String gameId) {

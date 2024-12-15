@@ -27,8 +27,9 @@ public class GameController {
 
     @CrossOrigin(originPatterns = "*")
     @GetMapping("/join/{gameId}")
-    public ResponseEntity<GameState> joinGame(@PathVariable String gameId) throws NoSuchGameFoundException {
-        GameState gameState = gameService.joinGame(gameId);
+    public ResponseEntity<GameState> joinGame(@PathVariable String gameId,
+                                              @PathVariable String playerId) throws NoSuchGameFoundException {
+        GameState gameState = gameService.joinGame(gameId, playerId);
         return ResponseEntity.ok(gameState);
     }
 
