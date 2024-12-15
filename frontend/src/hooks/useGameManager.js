@@ -9,9 +9,10 @@ export const useGameManager = () => {
 
   const handleCreateGame = async () => {
     try {
-      const { gameId, player1 } = await createGame();
-      sessionStorage.setItem("player", player1);
-      navigate(`/game/${gameId}`)
+      const gameState = await createGame();
+      sessionStorage.setItem("player", JSON.stringify(gameState.player1));
+      sessionStorage.setItem("gameCreator", true);
+      navigate(`/game/${gameState.gameId}`)
     } catch (error) {
       console.error("Error creating game:", error);
     }
@@ -19,9 +20,9 @@ export const useGameManager = () => {
 
   const handleJoinGame = async () => {
     try {
-      const { gameId, player2 } = await joinGame(joinInput);
-      sessionStorage.setItem("player", player2);
-      navigate(`/game/${gameId}`)
+      const gameState = await joinGame(joinInput);
+      sessionStorage.setItem("player", gameState.player2);
+      navigate(`/game/${gameState.gameId}`)
     } catch (error) {
       console.error("Error joining game:", error);
     }

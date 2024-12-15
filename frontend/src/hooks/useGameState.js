@@ -1,8 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { connectToWebSocket, disconnectWebSocket, processMove, wsJoinGame } from '../utils/webSocket';
 import { useNavigate, useParams } from 'react-router';
 import { useSnackbar } from 'notistack'
-
 import { endGame, joinGame } from '../utils/api';
 
 export const useGameState = () => {
@@ -17,6 +16,7 @@ export const useGameState = () => {
   const [currentTurn, setCurrentTurn] = useState("");
   const [player, setPlayer] = useState("");
   const [timerCnt, setTimerCnt] = useState(3);
+  const hasJoinedGame = useRef(false);
 
   const resetGame = () => {
     if (!gameId) {
@@ -37,28 +37,50 @@ export const useGameState = () => {
 
   const handleJoinGame = useCallback(async () => {
     try {
-      const game = await joinGame(gameId);
-      let playerSymbol = sessionStorage.getItem('player');
-      console.log("I Have joined the game:", game, playerSymbol);
-      if (!playerSymbol || (playerSymbol !== game.player1 && playerSymbol !== game.player2)) {
-        playerSymbol = game.player2;
-        localStorage.setItem('player', playerSymbol);
+      console.log("Joining game:", gameId);
+  
+      // Retrieve the player data from sessionStorage
+      const playerData = sessionStorage.getItem('player');
+      let player = null;
+  
+      if (playerData) {
+        try {
+          player = JSON.parse(playerData); // Parse only if data is available
+        } catch (error) {
+          console.error("Invalid player data in sessionStorage. Resetting storage.", error);
+          sessionStorage.removeItem('player'); // Clear invalid data
+          player = null;
+        }
       }
-      if(playerSymbol !== null)
-        setPlayer(playerSymbol.trim().at(-1));
+  
+      console.log("Get my Player:", player?.id);
+  
+      // Join the game using the player's ID if available
+      const game = await joinGame(gameId, player?.id);
+      console.log("I Have joined the game:", game, player);
+  
+      // Check if the player is not in the game, and update sessionStorage if necessary
+      if (!player || (player.id !== game.player1.id && player.id !== game.player2.id)) {
+        player = game.player2;
+        sessionStorage.setItem("player", JSON.stringify(player)); // Properly stringify
+      }
     } catch (error) {
+      // Handle errors and provide feedback
       enqueueSnackbar(`Error happened while joining the game: ${error.message}`, {
         variant: 'error',
       });
       navigate('/');
     }
-  }, [enqueueSnackbar, gameId, navigate])
+  }, [enqueueSnackbar, gameId, navigate]);
+  
+
 
   const decideWinner = useCallback((winner, isDraw) => {
     if (winner !== "" || isDraw) {
       console.log("Game over:", winner, isDraw);
 
       if (winner !== "") {
+        console.log("Player", player);
         if (player === winner) {
           setStatus("You Win");
         }
@@ -94,6 +116,10 @@ export const useGameState = () => {
     setCurrentTurn(gameState.currentPlayer);
     setIsDraw(gameState.draw);
 
+    if (sessionStorage.getItem("gameCreator")) setPlayer(gameState.player1.symbol);
+    else setPlayer(gameState.player2.symbol);
+    console.log("Player infoo :", player);
+
     if (gameState.currentPlayer === player) {
       setStatus(`Your turn`);
     } else {
@@ -115,6 +141,7 @@ export const useGameState = () => {
     setGrid(Array(3).fill(Array(3).fill("")));
     setStatus("");
     setTimerCnt(3);
+    sessionStorage.removeItem("gameCreator");
   };
 
 
@@ -129,7 +156,11 @@ export const useGameState = () => {
   }, [gameId, updateGameState]);
 
   useEffect(() => {
-    handleJoinGame();
+    if (!sessionStorage.getItem("gameCreator") && !hasJoinedGame.current) {
+      console.log("Joining game:", gameId);
+      handleJoinGame();
+      hasJoinedGame.current = true;
+    }
   }, [handleJoinGame]);
 
   useEffect(() => {

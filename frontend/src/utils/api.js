@@ -12,8 +12,8 @@ export const createGame = async () => {
 
 
 
-export const joinGame = async (gameId) => {
-  const response = await fetch(`${API_BASE}/join/${gameId}`);
+export const joinGame = async (gameId, playerId) => {
+  const response = await fetch(`${API_BASE}/join/${gameId}?playerId=${playerId}`);
   if (response.ok) {
     return response.json();
   }
