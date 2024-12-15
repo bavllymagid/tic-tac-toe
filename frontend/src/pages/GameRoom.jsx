@@ -6,13 +6,11 @@ import { useSnackbar } from "notistack";
 export const GameRoom = () => {
   const { enqueueSnackbar } = useSnackbar();
   const {
-    winner,
-    grid,
     player,
-    isDraw,
     timerCnt,
     status,
     gameId,
+    gameState: { board, winner, draw },
     handleSquareClick,
   } = useGameState();
 
@@ -40,8 +38,8 @@ export const GameRoom = () => {
         </span>
       </div>
       <div className="status">{status}</div>
-      <GameBoard grid={grid} onSquareClick={handleSquareClick} />
-      {(winner || isDraw) && (
+      <GameBoard grid={board} onSquareClick={handleSquareClick} />
+      {(winner || draw) && (
         <div className="resetMessage">
           Game will reset in {timerCnt} seconds...
         </div>

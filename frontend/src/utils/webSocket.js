@@ -7,6 +7,10 @@ let stompClient = null;
  * @param {function} onMessageReceived - Callback for receiving game state updates.
  */
 export const connectToWebSocket = (gameId, onMessageReceived, onOpen) => {
+  if (stompClient !== null) {
+    return;
+  }
+
   const socket = new WebSocket("ws://localhost:8080/ws");
   stompClient = over(socket);
 
@@ -14,7 +18,7 @@ export const connectToWebSocket = (gameId, onMessageReceived, onOpen) => {
     console.log("Connected to WebSocket");
 
     // Subscribe to updates for the specific game
-    if(stompClient.connected){
+    if (stompClient.connected) {
       stompClient.subscribe(`/topic/game/${gameId}`, (message) => {
         console.log("Received message:", message.body);
         onMessageReceived(JSON.parse(message.body));
@@ -30,10 +34,7 @@ export const wsJoinGame = (gameId) => {
     console.error("WebSocket is not connected. Cannot send join status.");
     return;
   }
-  stompClient.send(
-    `/app/join/${gameId}`,
-    {},
-  );
+  stompClient.send(`/app/join/${gameId}`, {});
 };
 
 /**
@@ -58,8 +59,7 @@ export const disconnectWebSocket = () => {
   if (stompClient) {
     stompClient.disconnect();
   }
-}
-
+};
 
 export const checkConnection = () => {
   if (stompClient) {
