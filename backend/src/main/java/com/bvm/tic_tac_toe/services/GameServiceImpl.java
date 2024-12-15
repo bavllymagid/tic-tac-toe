@@ -4,15 +4,15 @@ import com.bvm.tic_tac_toe.exceptions.exception.InvalidMoveException;
 import com.bvm.tic_tac_toe.exceptions.exception.NoSuchGameFoundException;
 import com.bvm.tic_tac_toe.model.GameMove;
 import com.bvm.tic_tac_toe.model.GameState;
+import com.bvm.tic_tac_toe.model.Player;
 import com.bvm.tic_tac_toe.utils.BoardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,9 +30,11 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameState createGame() {
+        Random random = new Random();
         GameState newGame = new GameState();
         newGame.setGameId(UUID.randomUUID().toString());
-        newGame.setPlayer1(UUID.randomUUID() + "-X");
+        newGame.setPlayer1(new Player(UUID.randomUUID().toString(),
+                random.nextBoolean() ? "X" : "O"));
         games.put(newGame.getGameId(), newGame);
         log.info("Created new game with id: {}", newGame.getGameId());
         return newGame;
@@ -41,17 +43,17 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameState joinGame(String gameId, String playerId) throws NoSuchGameFoundException {
         GameState gameState = getGame(gameId);
+        Random random = new Random();
         if (gameState != null) {
             if(gameState.getPlayer2() != null &&
-                    !gameState.getPlayer2().isEmpty() &&
                     !rejoin(gameId, playerId)){
                 throw new NoSuchGameFoundException("No such game found");
             }else{
-                String tempId = gameState.getPlayer1().substring(0, gameState.getPlayer1().indexOf("-"));
-                if(!tempId.equals(playerId) &&
-                        (gameState.getPlayer2() == null || Objects.requireNonNull(gameState.getPlayer2()).isEmpty())){
-                    gameState.setPlayer2(UUID.randomUUID() + "-O");
-                    gameState.setCurrentPlayer("X");
+                String tempId = gameState.getPlayer1().getId();
+                if(!tempId.equals(playerId) && gameState.getPlayer2() == null){
+                    gameState.setPlayer2(new Player(UUID.randomUUID().toString(),
+                            gameState.getPlayer1().getSymbol().equals("X") ? "O" : "X"));
+                    gameState.setCurrentPlayer(random.nextBoolean() ? "X" : "O");
                 }
                 log.info("Player joined game with id: {}", gameState.getGameId());
             }
@@ -64,8 +66,8 @@ public class GameServiceImpl implements GameService {
 
     private boolean rejoin(String gameId, String playerId){
         GameState gameState = getGame(gameId);
-        String player1 = gameState.getPlayer1().substring(0, gameState.getPlayer1().indexOf("-"));
-        String player2 = gameState.getPlayer2().substring(0, gameState.getPlayer2().indexOf("-"));
+        String player1 = gameState.getPlayer1().getId();
+        String player2 = gameState.getPlayer2().getId();
         return player1.equals(playerId) || player2.equals(playerId);
     }
 
