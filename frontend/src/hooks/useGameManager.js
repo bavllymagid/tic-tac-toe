@@ -21,7 +21,7 @@ export const useGameManager = () => {
   const handleJoinGame = async () => {
     try {
       const gameState = await joinGame(joinInput);
-      sessionStorage.setItem("player", gameState.player2);
+      sessionStorage.setItem("player", JSON.stringify(gameState.player2));
       navigate(`/game/${gameState.gameId}`)
     } catch (error) {
       console.error("Error joining game:", error);

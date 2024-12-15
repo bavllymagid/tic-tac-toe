@@ -14,7 +14,7 @@ export const useGameState = () => {
   const [winner, setWinner] = useState("");
   const [isDraw, setIsDraw] = useState(false);
   const [currentTurn, setCurrentTurn] = useState("");
-  const [player, setPlayer] = useState("");
+  const [playerSymbol, setPlayerSymbol] = useState("");
   const [timerCnt, setTimerCnt] = useState(3);
   const hasJoinedGame = useRef(false);
 
@@ -28,7 +28,7 @@ export const useGameState = () => {
   };
 
   const handleSquareClick = (row, col) => {
-    if (winner || grid[row][col] || currentTurn !== player) {
+    if (winner || grid[row][col] || currentTurn !== playerSymbol) {
       console.log(`Invalid move in game ${gameId}`);
       return;
     }
@@ -64,6 +64,7 @@ export const useGameState = () => {
         player = game.player2;
         sessionStorage.setItem("player", JSON.stringify(player)); // Properly stringify
       }
+      setPlayerSymbol(player?.symbol);
     } catch (error) {
       // Handle errors and provide feedback
       enqueueSnackbar(`Error happened while joining the game: ${error.message}`, {
@@ -80,8 +81,8 @@ export const useGameState = () => {
       console.log("Game over:", winner, isDraw);
 
       if (winner !== "") {
-        console.log("Player", player);
-        if (player === winner) {
+        console.log("Player", playerSymbol);
+        if (playerSymbol === winner) {
           setStatus("You Win");
         }
         else {
@@ -108,7 +109,7 @@ export const useGameState = () => {
         clearInterval(interval);
       };
     }
-  }, [player]);
+  }, [playerSymbol]);
 
   const updateGameState = useCallback((gameState) => {
     setGrid(gameState.board);
@@ -116,11 +117,11 @@ export const useGameState = () => {
     setCurrentTurn(gameState.currentPlayer);
     setIsDraw(gameState.draw);
 
-    if (sessionStorage.getItem("gameCreator")) setPlayer(gameState.player1.symbol);
-    else setPlayer(gameState.player2.symbol);
-    console.log("Player infoo :", player);
+    if (sessionStorage.getItem("gameCreator")) setPlayerSymbol(gameState.player1.symbol);
+    else setPlayerSymbol(gameState.player2.symbol);
+    console.log("Player infoo :", playerSymbol);
 
-    if (gameState.currentPlayer === player) {
+    if (gameState.currentPlayer === playerSymbol) {
       setStatus(`Your turn`);
     } else {
       setStatus("Waiting for other player move");
@@ -132,7 +133,7 @@ export const useGameState = () => {
     }
 
     console.log("Game state updated:", gameState);
-  }, [player, decideWinner]);
+  }, [playerSymbol, decideWinner]);
 
   const resetGameState = () => {
     setWinner(null);
@@ -185,10 +186,10 @@ export const useGameState = () => {
     winner,
     isDraw,
     currentTurn,
-    player,
+    playerSymbol,
     timerCnt,
     setTimerCnt,
-    setPlayer,
+    setPlayerSymbol,
     updateGameState,
     resetGameState,
     handleSquareClick,
