@@ -9,14 +9,18 @@ import com.bvm.tic_tac_toe.utils.BoardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@EnableScheduling
 public class GameServiceImpl implements GameService {
 
     private static final Logger log = LoggerFactory.getLogger(GameServiceImpl.class);
@@ -35,6 +39,7 @@ public class GameServiceImpl implements GameService {
         newGame.setGameId(UUID.randomUUID().toString());
         newGame.setPlayer1(new Player(UUID.randomUUID().toString(),
                 random.nextBoolean() ? "X" : "O"));
+        newGame.setLastMove(System.currentTimeMillis());
         games.put(newGame.getGameId(), newGame);
         log.info("Created new game with id: {}", newGame.getGameId());
         return newGame;
@@ -94,7 +99,7 @@ public class GameServiceImpl implements GameService {
         if (!processMove(gameState, move)) {
             throw new InvalidMoveException("Invalid move");
         }
-
+        gameState.setLastMove(System.currentTimeMillis());
         if (boardManager.checkIsDraw(gameState.getBoard())) {
             gameState.setDraw(true);
         } else if (boardManager.checkIsWinner(gameState.getBoard())) {
@@ -108,6 +113,16 @@ public class GameServiceImpl implements GameService {
     private boolean processMove(GameState gameState, GameMove move) {
         return boardManager.makeMove(gameState, move.getRow(), move.getCol())
                 || gameState.getPlayer2() != null;
+    }
+
+    @Scheduled(fixedRate = 60000)
+    private void checkInActiveGame(){
+        games.forEach((k, v) -> {
+            if(System.currentTimeMillis() - v.getLastMove() > Duration.ofHours(1).toMillis()){
+                games.remove(k);
+                log.info("Game with id: {} ended due to inactivity", k);
+            }
+        });
     }
 
 }

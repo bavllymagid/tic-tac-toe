@@ -11,6 +11,7 @@ public class GameState {
     private boolean isDraw;
     private Player player1;
     private Player player2;
+    private Long lastMove;
 
     public GameState() {
         this.board = new String[3][3];
