@@ -8,7 +8,7 @@ export const GameRoom = () => {
   const {
     winner,
     grid,
-    player,
+    playerSymbol,
     isDraw,
     timerCnt,
     status,
@@ -46,7 +46,7 @@ export const GameRoom = () => {
           Game will reset in {timerCnt} seconds...
         </div>
       )}
-      <div className="status">Player: {player}</div>
+      <div className="status">Player: {playerSymbol}</div>
     </div>
   );
 };
