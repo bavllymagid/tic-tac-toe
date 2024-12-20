@@ -1,7 +1,7 @@
 // components/GameBoard.js
 import PropTypes from 'prop-types';
 
-export const GameBoard = ({ grid, onSquareClick }) => {
+export const GameBoard = ({ board, onSquareClick }) => {
   const renderSquare = (i) => {
     const row = Math.floor(i / 3);
     const col = i % 3;
@@ -12,14 +12,14 @@ export const GameBoard = ({ grid, onSquareClick }) => {
         className="square" 
         onClick={() => onSquareClick(row, col)}
       >
-        {grid[row][col]}
+        {board[row][col]}
       </div>
     );
   };
 
   return (
     <div className="grid">
-      {grid.map((row, i) => 
+      {board.map((row, i) => 
         row.map((_, j) => renderSquare(i * 3 + j))
       )}
     </div>
@@ -27,7 +27,7 @@ export const GameBoard = ({ grid, onSquareClick }) => {
 };
 
 GameBoard.propTypes = {
-  grid: PropTypes.arrayOf(
+  board: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.string)
   ).isRequired,
   onSquareClick: PropTypes.func.isRequired

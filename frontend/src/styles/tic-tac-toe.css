@@ -96,13 +96,12 @@ body {
   transform: scale(0.98);
 }
 
-/* Reset message animation */
-.resetMessage {
-  color: white;
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
+/* reset or end game buttons */
+.resetOrEnd {
+  display: flex;
+  gap: 8px;
+  width: 100%;
   margin-top: clamp(16px, 4vw, 24px);
-  text-align: center;
-  animation: pulse 1s infinite;
 }
 
 @keyframes pulse {

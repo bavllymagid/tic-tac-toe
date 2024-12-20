@@ -11,4 +11,5 @@ public interface GameService {
     void endGame(String gameId) throws NoSuchGameFoundException;
     GameState getGame(String gameId) throws NoSuchGameFoundException;
     GameState updateGame(String gameId, GameMove move) throws InvalidMoveException, NoSuchGameFoundException;
+    GameState resetGame(String gameId) throws NoSuchGameFoundException;
 }

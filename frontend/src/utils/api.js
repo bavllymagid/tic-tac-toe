@@ -26,3 +26,12 @@ export const endGame = async (gameId) => {
     throw new Error("Failed to end game");
   }
 };
+
+
+export const resetGameCall = async (gameId) => {
+  const response = await fetch(`${API_BASE}/reset/${gameId}`, { method: "GET" });
+  if (response.ok) {
+    return response.json();
+  }
+  throw new Error("Failed to reset game");
+};

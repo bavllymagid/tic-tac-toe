@@ -110,6 +110,20 @@ public class GameServiceImpl implements GameService {
         return gameState;
     }
 
+    @Override
+    public GameState resetGame(String gameId) throws NoSuchGameFoundException {
+        GameState gameState = games.get(gameId);
+        if (gameState == null) {
+            throw new NoSuchGameFoundException("No such game found");
+        }
+        gameState.setBoard(new String[][]{{" ", " ", " "}, {" ", " ", " "}, {" ", " ", " "}});
+        gameState.setDraw(false);
+        gameState.setWinner(null);
+        gameState.setLastMove(System.currentTimeMillis());
+        games.put(gameId, gameState);
+        return gameState;
+    }
+
     private boolean processMove(GameState gameState, GameMove move) {
         return boardManager.makeMove(gameState, move.getRow(), move.getCol())
                 || gameState.getPlayer2() != null;
@@ -124,5 +138,6 @@ public class GameServiceImpl implements GameService {
             }
         });
     }
+
 
 }

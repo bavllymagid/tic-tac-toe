@@ -39,4 +39,10 @@ public class GameController {
         gameService.endGame(gameId);
         return ResponseEntity.noContent().build();
     }
+
+    @CrossOrigin(originPatterns = "*")
+    @GetMapping("/reset/{gameId}")
+    public ResponseEntity<GameState> resetGame(@PathVariable String gameId) {
+        return ResponseEntity.ok(gameService.resetGame(gameId));
+    }
 }
