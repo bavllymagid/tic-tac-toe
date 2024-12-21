@@ -8,7 +8,8 @@ const initialState = {
   isDraw: false,
   currentTurn: "",
   playerSymbol: "",
-  hasJoinedGame: false,
+  isPopupOpen: false,
+  isRequester: false,
 };
 
 const gameSlice = createSlice({
@@ -33,8 +34,11 @@ const gameSlice = createSlice({
     setPlayerSymbol: (state, action) => {
       state.playerSymbol = action.payload;
     },
-    setHasJoinedGame: (state, action) => {
-      state.hasJoinedGame = action.payload;
+    setIsPopupOpen: (state, action) => {
+      state.isPopupOpen = action.payload;
+    },
+    setIsRequester: (state, action) => {
+      state.isRequester = action.payload;
     },
     resetGameState: () => {
       return initialState;
@@ -74,7 +78,8 @@ export const {
   setPlayerSymbol,
   resetGameState,
   updateGameState,
-  setHasJoinedGame,
+  setIsPopupOpen,
+  setIsRequester,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

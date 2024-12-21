@@ -7,6 +7,8 @@ import {
   setPlayerSymbol,
   updateGameState,
   resetGameState,
+  setIsPopupOpen,
+  setIsRequester,
 } from '../store/gameSlice';
 import { connectToWebSocket, disconnectWebSocket, processMove, wsJoinGame, wsEndGame, wsRestartGame } from '../utils/webSocket';
 import { joinGame, endGame} from '../utils/api';
@@ -26,6 +28,8 @@ export const useGameState = () => {
     isDraw,
     currentTurn,
     playerSymbol,
+    isPopupOpen,
+    isRequester,
   } = useSelector(state => state.game);
 
   const handleGameStateUpdate = useCallback((gameState) => {
@@ -92,9 +96,7 @@ export const useGameState = () => {
       resetGame("END");
     }
     else if (res == 1) {
-      //add popup for that the other player wants to restart the game yes/no 
-      //if yes then call wsRestartGame
-      //if no then do nothing
+      dispatch(setIsPopupOpen(true)); // Show the popup
     }
     else if (res == 2) {
       hasJoinedGame.current = false;
@@ -102,7 +104,7 @@ export const useGameState = () => {
       handleJoinGame();
     }
   }
-    , [handleJoinGame, resetGame]);
+    , [dispatch, handleJoinGame, resetGame]);
 
   const handleEndGameClick = useCallback(() => {
     resetGame("END");
@@ -111,7 +113,19 @@ export const useGameState = () => {
 
   const handleRestartGameClick = useCallback(() => {
     wsRestartGame(gameId);
-  }, [gameId]);
+    dispatch(setIsRequester(true));
+    dispatch(setIsPopupOpen(true));
+  }, [dispatch, gameId]);
+
+  const handlePopupRestart = useCallback(() => {
+    dispatch(setIsPopupOpen(false));
+    wsRestartGame(gameId);
+  }, [dispatch, gameId])
+
+  const handlePopupEnd = useCallback(() => {
+    dispatch(setIsPopupOpen(false));
+    resetGame("END");
+  }, [dispatch, resetGame]);
 
   // WebSocket connection effect
   useEffect(() => {
@@ -144,5 +158,9 @@ export const useGameState = () => {
     gameId,
     handleEndGameClick,
     handleRestartGameClick,
+    isPopupOpen,
+    isRequester,
+    handlePopupRestart,
+    handlePopupEnd,
   };
 };

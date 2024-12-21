@@ -2,6 +2,7 @@ import { GameBoard } from "../components/GameBoard";
 import { useGameState } from "../hooks/useGameState";
 import { useCallback } from "react";
 import { useSnackbar } from "notistack";
+import PopupPrompt from "../components/ResetPopup";
 
 export const GameRoom = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -15,6 +16,10 @@ export const GameRoom = () => {
     handleEndGameClick,
     handleRestartGameClick,
     handleSquareClick,
+    isPopupOpen,
+    isRequester,
+    handlePopupRestart,
+    handlePopupEnd,
   } = useGameState();
 
   const handleGameIdClicked = useCallback(() => {
@@ -49,6 +54,13 @@ export const GameRoom = () => {
           <button onClick={handleEndGameClick}>Close</button>
         </div>
       )}
+      {console.log("isReq", isRequester)}
+      <PopupPrompt
+        isOpen={isPopupOpen}
+        onRestart={handlePopupRestart}
+        onEnd={handlePopupEnd}
+        isRequester={isRequester}
+      />
     </div>
   );
 };
