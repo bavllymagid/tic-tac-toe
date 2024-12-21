@@ -50,12 +50,12 @@ public class GameServiceImpl implements GameService {
         GameState gameState = getGame(gameId);
         Random random = new Random();
         if (gameState != null) {
-            if(gameState.getPlayer2() != null &&
-                    !rejoin(gameId, playerId)){
+            if (gameState.getPlayer2() != null &&
+                    !rejoin(gameId, playerId)) {
                 throw new NoSuchGameFoundException("No such game found");
-            }else{
+            } else {
                 String tempId = gameState.getPlayer1().getId();
-                if(!tempId.equals(playerId) && gameState.getPlayer2() == null){
+                if (!tempId.equals(playerId) && gameState.getPlayer2() == null) {
                     gameState.setPlayer2(new Player(UUID.randomUUID().toString(),
                             gameState.getPlayer1().getSymbol().equals("X") ? "O" : "X"));
                     gameState.setCurrentPlayer(random.nextBoolean() ? "X" : "O");
@@ -69,7 +69,7 @@ public class GameServiceImpl implements GameService {
     }
 
 
-    private boolean rejoin(String gameId, String playerId){
+    private boolean rejoin(String gameId, String playerId) {
         GameState gameState = getGame(gameId);
         String player1 = gameState.getPlayer1().getId();
         String player2 = gameState.getPlayer2().getId();
@@ -111,17 +111,18 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameState resetGame(String gameId) throws NoSuchGameFoundException {
+    public Integer resetGame(String gameId) throws NoSuchGameFoundException {
         GameState gameState = games.get(gameId);
         if (gameState == null) {
             throw new NoSuchGameFoundException("No such game found");
         }
-        gameState.setBoard(new String[][]{{" ", " ", " "}, {" ", " ", " "}, {" ", " ", " "}});
-        gameState.setDraw(false);
-        gameState.setWinner(null);
-        gameState.setLastMove(System.currentTimeMillis());
-        games.put(gameId, gameState);
-        return gameState;
+        gameState.setRestartCount(gameState.getRestartCount() + 1);
+
+        if (gameState.getRestartCount() == 2) {
+            resetGame(gameState, gameId);
+            return 2;
+        }
+        return gameState.getRestartCount();
     }
 
     private boolean processMove(GameState gameState, GameMove move) {
@@ -130,13 +131,28 @@ public class GameServiceImpl implements GameService {
     }
 
     @Scheduled(fixedRate = 60000)
-    private void checkInActiveGame(){
+    private void checkInActiveGame() {
         games.forEach((k, v) -> {
-            if(System.currentTimeMillis() - v.getLastMove() > Duration.ofHours(1).toMillis()){
+            if (System.currentTimeMillis() - v.getLastMove() > Duration.ofHours(1).toMillis()) {
                 games.remove(k);
                 log.info("Game with id: {} ended due to inactivity", k);
             }
         });
+    }
+
+    private void resetGame(GameState gameState, String gameId) {
+        Random random = new Random();
+        gameState.setBoard(new String[3][3]);
+        gameState.setDraw(false);
+        gameState.setWinner("");
+        gameState.setLastMove(System.currentTimeMillis());
+        gameState.setRestartCount(0);
+        gameState.setPlayer1(new Player(gameState.getPlayer1().getId(),
+                random.nextBoolean() ? "X" : "O"));
+        gameState.setPlayer2(new Player(gameState.getPlayer2().getId(),
+                gameState.getPlayer1().getSymbol().equals("X") ? "O" : "X"));
+        gameState.setCurrentPlayer(random.nextBoolean() ? "X" : "O");
+        games.put(gameId, gameState);
     }
 
 

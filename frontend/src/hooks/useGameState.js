@@ -3,14 +3,13 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  setPlayerSymbol, 
-  updateGameState, 
+import {
+  setPlayerSymbol,
+  updateGameState,
   resetGameState,
-  setTimerCount 
 } from '../store/gameSlice';
-import { connectToWebSocket, disconnectWebSocket, processMove, wsJoinGame } from '../utils/webSocket';
-import { endGame, joinGame } from '../utils/api';
+import { connectToWebSocket, disconnectWebSocket, processMove, wsJoinGame, wsEndGame, wsRestartGame } from '../utils/webSocket';
+import { joinGame, endGame} from '../utils/api';
 
 export const useGameState = () => {
   const { gameId } = useParams();
@@ -27,72 +26,92 @@ export const useGameState = () => {
     isDraw,
     currentTurn,
     playerSymbol,
-    timerCnt
   } = useSelector(state => state.game);
 
-  const resetGame = () => {
-    if (!gameId) return;
-    
-    endGame(gameId).catch((error) => console.error("Failed to end game:", error));
-    disconnectWebSocket();
-    dispatch(resetGameState());
-    navigate('/');
-  };
-
-  const handleSquareClick = (row, col) => {
-    if (winner || grid[row][col] || currentTurn !== playerSymbol) {
-      console.log(`Invalid move in game ${gameId}`);
-      return;
-    }
-    processMove(gameId, row, col);
-  };
+  const handleGameStateUpdate = useCallback((gameState) => {
+    dispatch(updateGameState(gameState));
+  }, [dispatch]);
 
   const handleJoinGame = useCallback(async () => {
     try {
       console.log("Joining game:", gameId);
       const playerData = sessionStorage.getItem('player');
       let player = null;
-
+      console.log(playerData);
       if (playerData) {
         try {
           player = JSON.parse(playerData);
+          console.log(player);
         } catch (error) {
           console.error("Invalid player data in sessionStorage", error);
           sessionStorage.removeItem('player');
         }
       }
-
       const game = await joinGame(gameId, player?.id);
-      
       if (!player || (player.id !== game.player1.id && player.id !== game.player2.id)) {
         player = game.player2;
         sessionStorage.setItem("player", JSON.stringify(player));
       }
-      
+      dispatch(updateGameState(game));
       dispatch(setPlayerSymbol(player?.symbol));
     } catch (error) {
+      console.error(`Error joining game: ${error.message}`);
       enqueueSnackbar(`Error joining game: ${error.message}`, { variant: 'error' });
       navigate('/');
     }
-  }, [enqueueSnackbar, gameId, navigate, dispatch]);
+  }, [gameId, dispatch, enqueueSnackbar, navigate]);
 
-  const handleGameStateUpdate = useCallback((gameState) => {
-    dispatch(updateGameState(gameState));
-    
-    if (gameState.winner !== "" || gameState.draw) {
-      const startTime = Date.now();
-      const interval = setInterval(() => {
-        const remainingSeconds = Math.max(3 - Math.floor((Date.now() - startTime) / 1000), 0);
-        dispatch(setTimerCount(remainingSeconds));
-        
-        if (remainingSeconds === 0) {
-          clearInterval(interval);
-        }
-      }, 1000);
+  const resetGame = useCallback((action) => {
+    if (!gameId) return;
 
-      return () => clearInterval(interval);
+    if (action === "END") {
+      endGame(gameId).catch((error) => console.error("Failed to end game:", error));
+      wsEndGame(gameId);
+      disconnectWebSocket();
+      navigate('/');
     }
-  }, [dispatch]);
+    else if (action === "RESTART") {
+      console.log("Restarting game:", gameId);
+      dispatch(resetGameState());
+      handleJoinGame();
+    }
+    dispatch(resetGameState());
+  }, [gameId, dispatch, navigate, handleJoinGame]);
+
+  const handleSquareClick = (row, col) => {
+    if ( winner || grid[row][col] || currentTurn !== playerSymbol) {
+      console.log(`Invalid move in game ${gameId}`);
+      return;
+    }
+    processMove(gameId, row, col);
+  };
+
+
+  const handleEndGame = useCallback((res) => {
+    if (res == 0) {
+      resetGame("END");
+    }
+    else if (res == 1) {
+      //add popup for that the other player wants to restart the game yes/no 
+      //if yes then call wsRestartGame
+      //if no then do nothing
+    }
+    else if (res == 2) {
+      hasJoinedGame.current = false;
+      resetGame("RESTART");
+      handleJoinGame();
+    }
+  }
+    , [handleJoinGame, resetGame]);
+
+  const handleEndGameClick = useCallback(() => {
+    resetGame("END");
+  }
+    , [resetGame]);
+
+  const handleRestartGameClick = useCallback(() => {
+    wsRestartGame(gameId);
+  }, [gameId]);
 
   // WebSocket connection effect
   useEffect(() => {
@@ -100,35 +119,19 @@ export const useGameState = () => {
       connectToWebSocket(
         gameId,
         handleGameStateUpdate,
-        () => wsJoinGame(gameId)
+        () => wsJoinGame(gameId),
+        handleEndGame
       );
     }
-  }, [gameId, handleGameStateUpdate]);
+  }, [gameId, handleEndGame, handleGameStateUpdate]);
 
   // Join game effect
   useEffect(() => {
-    if (!sessionStorage.getItem("gameCreator") && !hasJoinedGame.current) {
-      handleJoinGame();
+    if (!hasJoinedGame.current) {
       hasJoinedGame.current = true;
+      handleJoinGame();
     }
-  }, [handleJoinGame]);
-
-  // Game end effect
-  useEffect(() => {
-    let timer;
-    if (winner || isDraw) {
-      timer = setTimeout(() => {
-        dispatch(resetGameState());
-        resetGame();
-      }, 3000);
-    }
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [winner, isDraw, dispatch]);
+  }, [dispatch, handleJoinGame, hasJoinedGame]);
 
   return {
     grid,
@@ -137,8 +140,9 @@ export const useGameState = () => {
     isDraw,
     currentTurn,
     playerSymbol,
-    timerCnt,
     handleSquareClick,
     gameId,
+    handleEndGameClick,
+    handleRestartGameClick,
   };
 };

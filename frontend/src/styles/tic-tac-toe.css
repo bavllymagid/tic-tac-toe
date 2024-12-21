@@ -99,10 +99,13 @@ body {
 /* reset or end game buttons */
 .resetOrEnd {
   display: flex;
+  align-items: center;
   gap: 8px;
   width: 100%;
+  justify-content: center;
   margin-top: clamp(16px, 4vw, 24px);
 }
+
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
@@ -129,40 +132,6 @@ body {
   margin-top: clamp(16px, 4vw, 24px);
 }
 
-/* Input styles */
-.setup input {
-  width: 100%;
-  padding: clamp(8px, 2vw, 12px);
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  border: 2px solid white;
-  background-color: transparent;
-  color: white;
-  text-align: center;
-  border-radius: 4px;
-}
-
-/* Button styles */
-.setup button {
-  width: 100%;
-  padding: clamp(8px, 2vw, 12px);
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  font-weight: bold;
-  color: white;
-  background-color: transparent;
-  border: 2px solid white;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border-radius: 4px;
-}
-
-.setup button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-}
-
-.setup button:active {
-  transform: translateY(1px);
-}
 
 /* Media Queries */
 @media (min-width: 768px) {

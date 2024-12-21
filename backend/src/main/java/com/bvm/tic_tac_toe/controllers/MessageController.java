@@ -4,7 +4,6 @@ import com.bvm.tic_tac_toe.exceptions.exception.InvalidMoveException;
 import com.bvm.tic_tac_toe.exceptions.exception.NoSuchGameFoundException;
 import com.bvm.tic_tac_toe.model.GameMove;
 import com.bvm.tic_tac_toe.model.GameState;
-import com.bvm.tic_tac_toe.model.ResetState;
 import com.bvm.tic_tac_toe.services.GameServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class MessageController {
     }
 
     @MessageMapping("/move/{gameId}")
-    @SendTo("/topic/game/{gameId}")
+    @SendTo("/state/game/{gameId}")
     public GameState processMove(@DestinationVariable String gameId, @Payload GameMove move)
             throws InvalidMoveException,
             NoSuchGameFoundException {
@@ -35,7 +34,7 @@ public class MessageController {
     }
 
     @MessageMapping("/join/{gameId}")
-    @SendTo("/topic/game/{gameId}")
+    @SendTo("/state/game/{gameId}")
     public GameState joinGame(@DestinationVariable String gameId) throws NoSuchGameFoundException {
         GameState gameState = gameService.getGame(gameId);
         if (gameState == null) {
@@ -46,19 +45,15 @@ public class MessageController {
     }
 
     @MessageMapping("/over/{gameId}")
-    @SendTo("/topic/game/{gameId}")
-    public GameState endGame(@DestinationVariable String gameId) {
+    @SendTo("/action/game/{gameId}")
+    public Integer endGame(@DestinationVariable String gameId) {
         gameService.endGame(gameId);
-        return null;
+        return 0;
     }
 
     @MessageMapping("/reset/{gameId}")
-    @SendTo("/topic/game/{gameId}")
-    public ResetState resetGame(@DestinationVariable String gameId,
-                                @DestinationVariable String playerId,
-                                @DestinationVariable Boolean reset) throws NoSuchGameFoundException {
-        gameService.resetGame(gameId);
-
-        return new ResetState(gameId, playerId, reset);
+    @SendTo("/action/game/{gameId}")
+    public Integer resetGame(@DestinationVariable String gameId) throws NoSuchGameFoundException {
+        return gameService.resetGame(gameId);
     }
 }

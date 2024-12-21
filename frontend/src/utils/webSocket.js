@@ -6,7 +6,7 @@ let stompClient = null;
  * @param {string} gameId - The ID of the game to subscribe to.
  * @param {function} onMessageReceived - Callback for receiving game state updates.
  */
-export const connectToWebSocket = (gameId, onMessageReceived, onOpen) => {
+export const connectToWebSocket = (gameId, onMessageReceived, onOpen, onActionRecived) => {
   const socket = new WebSocket("ws://localhost:8080/ws");
   stompClient = over(socket);
 
@@ -15,11 +15,16 @@ export const connectToWebSocket = (gameId, onMessageReceived, onOpen) => {
 
     // Subscribe to updates for the specific game
     if(stompClient.connected){
-      stompClient.subscribe(`/topic/game/${gameId}`, (message) => {
+      stompClient.subscribe(`/state/game/${gameId}`, (message) => {
         console.log("Received message:", message.body);
         onMessageReceived(JSON.parse(message.body));
       });
       onOpen();
+
+      stompClient.subscribe(`/action/game/${gameId}`, (message) => {
+        console.log("Received action:", message.body);
+        onActionRecived(JSON.parse(message.body));
+      });
     }
   });
 };
@@ -61,9 +66,24 @@ export const disconnectWebSocket = () => {
 }
 
 
-export const checkConnection = () => {
-  if (stompClient) {
-    return true;
+export const wsEndGame = (gameId) => {
+  if(!stompClient || !stompClient.connected){
+    console.error("WebSocket is not connected. Cannot send end game.");
+    return;
   }
-  return false;
-};
+  stompClient.send(
+    `/app/over/${gameId}`,
+    {},
+  );
+}
+
+export const wsRestartGame = (gameId) => {
+  if(!stompClient || !stompClient.connected){
+    console.error("WebSocket is not connected. Cannot send end game.");
+    return;
+  }
+  stompClient.send(
+    `/app/reset/${gameId}`,
+    {},
+  );
+}

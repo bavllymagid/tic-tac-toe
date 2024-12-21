@@ -42,7 +42,7 @@ public class GameController {
 
     @CrossOrigin(originPatterns = "*")
     @GetMapping("/reset/{gameId}")
-    public ResponseEntity<GameState> resetGame(@PathVariable String gameId) {
+    public ResponseEntity<Integer> resetGame(@PathVariable String gameId) {
         return ResponseEntity.ok(gameService.resetGame(gameId));
     }
 }

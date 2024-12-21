@@ -10,9 +10,10 @@ export const GameRoom = () => {
     grid,
     playerSymbol,
     isDraw,
-    timerCnt,
     status,
     gameId,
+    handleEndGameClick,
+    handleRestartGameClick,
     handleSquareClick,
   } = useGameState();
 
@@ -41,12 +42,13 @@ export const GameRoom = () => {
       </div>
       <div className="status">{status}</div>
       <GameBoard grid={grid} onSquareClick={handleSquareClick} />
+      <div className="status">Player: {playerSymbol}</div>
       {(winner || isDraw) && (
-        <div className="resetMessage">
-          Game will reset in {timerCnt} seconds...
+        <div className="resetOrEnd">
+          <button onClick={handleRestartGameClick}>Rematch</button>
+          <button onClick={handleEndGameClick}>Close</button>
         </div>
       )}
-      <div className="status">Player: {playerSymbol}</div>
     </div>
   );
 };
