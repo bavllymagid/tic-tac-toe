@@ -28,6 +28,8 @@ body {
   padding-right: 10%;
   min-width: 320px;
   min-height: 100vh;
+  max-height: 100dvh;
+  max-width: 100dvw;
 }
 
 h1 {

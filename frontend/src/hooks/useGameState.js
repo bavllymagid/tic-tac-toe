@@ -58,6 +58,7 @@ export const useGameState = () => {
       }
       dispatch(updateGameState(game));
       dispatch(setPlayerSymbol(player?.symbol));
+      enqueueSnackbar(`Player joined`, { variant: 'info' }, { autoHideDuration: 300 });
     } catch (error) {
       console.error(`Error joining game: ${error.message}`);
       enqueueSnackbar(`Error joining game: ${error.message}`, { variant: 'error' }, { autoHideDuration: 1000 });
