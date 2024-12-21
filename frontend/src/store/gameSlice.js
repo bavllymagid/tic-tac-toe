@@ -45,7 +45,10 @@ const gameSlice = createSlice({
       state.winner = gameState.winner;
       state.currentTurn = gameState.currentPlayer;
       state.isDraw = gameState.draw;
-      if (state.winner == "") {
+      if(state.isDraw) {
+        state.status = 'Draw';
+      }
+      else if (state.winner == "") {
         if (gameState.currentPlayer === state.playerSymbol) {
           state.status = 'Your turn';
         } else {
