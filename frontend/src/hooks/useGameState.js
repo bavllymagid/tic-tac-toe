@@ -60,7 +60,7 @@ export const useGameState = () => {
       dispatch(setPlayerSymbol(player?.symbol));
     } catch (error) {
       console.error(`Error joining game: ${error.message}`);
-      enqueueSnackbar(`Error joining game: ${error.message}`, { variant: 'error' });
+      enqueueSnackbar(`Error joining game: ${error.message}`, { variant: 'error' }, { autoHideDuration: 1000 });
       navigate('/');
     }
   }, [gameId, dispatch, enqueueSnackbar, navigate]);
@@ -70,8 +70,10 @@ export const useGameState = () => {
 
     if (action === "END") {
       endGame(gameId).catch((error) => console.error("Failed to end game:", error));
+      enqueueSnackbar(`Game has ended`, { variant: 'info' }, { autoHideDuration: 1000 });
       wsEndGame(gameId);
       disconnectWebSocket();
+      
       navigate('/');
     }
     else if (action === "RESTART") {
@@ -80,7 +82,7 @@ export const useGameState = () => {
       handleJoinGame();
     }
     dispatch(resetGameState());
-  }, [gameId, dispatch, navigate, handleJoinGame]);
+  }, [gameId, dispatch, enqueueSnackbar, navigate, handleJoinGame]);
 
   const handleSquareClick = (row, col) => {
     if ( winner || grid[row][col] || currentTurn !== playerSymbol) {

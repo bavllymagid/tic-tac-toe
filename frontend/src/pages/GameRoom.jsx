@@ -2,6 +2,7 @@ import { GameBoard } from "../components/GameBoard";
 import { useGameState } from "../hooks/useGameState";
 import { useCallback } from "react";
 import { useSnackbar } from "notistack";
+import Confetti from "react-confetti";
 import PopupPrompt from "../components/ResetPopup";
 
 export const GameRoom = () => {
@@ -27,13 +28,13 @@ export const GameRoom = () => {
       .writeText(gameId)
       .then(() => {
         enqueueSnackbar("Game ID copied to clipboard", {
-          variant: "success",
-        });
+          variant: "success", 
+        }, { autoHideDuration: 1000 });
       })
       .catch(() => {
         enqueueSnackbar("Error happend while copying Game ID", {
           variant: "error",
-        });
+        }, { autoHideDuration: 1000 });
       });
   }, [gameId, enqueueSnackbar]);
 
@@ -54,7 +55,15 @@ export const GameRoom = () => {
           <button onClick={handleEndGameClick}>Close</button>
         </div>
       )}
-      {console.log("isReq", isRequester)}
+      {
+        winner == playerSymbol && (
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            recycle={false}
+          />
+        )
+      }
       <PopupPrompt
         isOpen={isPopupOpen}
         onRestart={handlePopupRestart}
