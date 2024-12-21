@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.2.1",
     "@reduxjs/toolkit": "^2.5.0",
     "canvas-confetti": "^1.9.3",
     "confetti": "^2.0.3",

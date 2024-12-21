@@ -2,20 +2,18 @@ import { GameBoard } from "../components/GameBoard";
 import { useGameState } from "../hooks/useGameState";
 import { useCallback } from "react";
 import { useSnackbar } from "notistack";
-// import CelebDisplay from "../components/ConfettiCeleb";
 
 export const GameRoom = () => {
   const { enqueueSnackbar } = useSnackbar();
   const {
     winner,
-    board,
+    grid,
     playerSymbol,
     isDraw,
+    timerCnt,
     status,
     gameId,
     handleSquareClick,
-    handleGameEnd,
-    handleGameReset,
   } = useGameState();
 
   const handleGameIdClicked = useCallback(() => {
@@ -42,16 +40,10 @@ export const GameRoom = () => {
         </span>
       </div>
       <div className="status">{status}</div>
-      <GameBoard board={board} onSquareClick={handleSquareClick} />
-      {/* {winner == playerSymbol && (
-        <div className="winner">
-          <CelebDisplay duration={3}/>
-        </div>
-      )} */}
+      <GameBoard grid={grid} onSquareClick={handleSquareClick} />
       {(winner || isDraw) && (
-        <div className="resetOrEnd">
-          <button onClick={handleGameReset}>Reset</button>
-          <button onClick={handleGameEnd}>End</button>
+        <div className="resetMessage">
+          Game will reset in {timerCnt} seconds...
         </div>
       )}
       <div className="status">Player: {playerSymbol}</div>

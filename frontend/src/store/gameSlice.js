@@ -2,7 +2,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  board: Array(3).fill(Array(3).fill("")),
+  grid: Array(3).fill(Array(3).fill("")),
   status: "",
   winner: "",
   isDraw: false,
@@ -16,7 +16,7 @@ const gameSlice = createSlice({
   initialState,
   reducers: {
     updateBoard: (state, action) => {
-      state.board = action.payload;
+      state.grid = action.payload;
     },
     setGameStatus: (state, action) => {
       state.status = action.payload;
@@ -41,21 +41,17 @@ const gameSlice = createSlice({
     },
     updateGameState: (state, action) => {
       const gameState = action.payload;
-      state.board = gameState.board;
+      state.grid = gameState.board;
       state.winner = gameState.winner;
       state.currentTurn = gameState.currentPlayer;
       state.isDraw = gameState.draw;
-      if (state.isDraw) {
-        state.status = 'Draw';
-      }
-      else if (state.winner == "") {
+      if (state.winner == "") {
         if (gameState.currentPlayer === state.playerSymbol) {
           state.status = 'Your turn';
         } else {
           state.status = 'Waiting for other player move';
         }
-      }
-      else {
+      } else {
         if (state.winner == state.playerSymbol) {
           state.status = 'You win';
         } else {

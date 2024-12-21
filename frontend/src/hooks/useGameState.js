@@ -10,7 +10,7 @@ import {
   setTimerCount 
 } from '../store/gameSlice';
 import { connectToWebSocket, disconnectWebSocket, processMove, wsJoinGame } from '../utils/webSocket';
-import { resetGameCall, endGame, joinGame } from '../utils/api';
+import { endGame, joinGame } from '../utils/api';
 
 export const useGameState = () => {
   const { gameId } = useParams();
@@ -18,11 +18,10 @@ export const useGameState = () => {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const hasJoinedGame = useRef(false);
-  const isResetClicked = useRef(null);
 
   // Get state from Redux
   const {
-    board,
+    grid,
     status,
     winner,
     isDraw,
@@ -31,22 +30,17 @@ export const useGameState = () => {
     timerCnt
   } = useSelector(state => state.game);
 
-  const resetGame = useCallback(() => {
+  const resetGame = () => {
     if (!gameId) return;
     
+    endGame(gameId).catch((error) => console.error("Failed to end game:", error));
+    disconnectWebSocket();
     dispatch(resetGameState());
-    if(!isResetClicked.current == true){
-      endGame(gameId).catch((error) => console.error("Failed to end game:", error));
-      disconnectWebSocket();
-      navigate('/');
-    } else if(isResetClicked.current == true){
-      resetGameCall(gameId).catch((error) => console.error("Failed to reset game:", error));
-      hasJoinedGame.current = false;
-    }
-  }, [gameId, dispatch, navigate, hasJoinedGame]);
+    navigate('/');
+  };
 
   const handleSquareClick = (row, col) => {
-    if (winner || board[row][col] || currentTurn !== playerSymbol) {
+    if (winner || grid[row][col] || currentTurn !== playerSymbol) {
       console.log(`Invalid move in game ${gameId}`);
       return;
     }
@@ -100,16 +94,6 @@ export const useGameState = () => {
     }
   }, [dispatch]);
 
-  const handleGameEnd = useCallback(() => {
-    resetGame();
-  }, [resetGame]);
-
-  const handleGameReset = useCallback(() => {
-    isResetClicked.current = true;
-    resetGame();
-    handleJoinGame();
-  }, [handleJoinGame, resetGame]);
-
   // WebSocket connection effect
   useEffect(() => {
     if (gameId) {
@@ -123,16 +107,31 @@ export const useGameState = () => {
 
   // Join game effect
   useEffect(() => {
-    if (!hasJoinedGame.current) {
+    if (!sessionStorage.getItem("gameCreator") && !hasJoinedGame.current) {
       handleJoinGame();
       hasJoinedGame.current = true;
     }
   }, [handleJoinGame]);
 
+  // Game end effect
+  useEffect(() => {
+    let timer;
+    if (winner || isDraw) {
+      timer = setTimeout(() => {
+        dispatch(resetGameState());
+        resetGame();
+      }, 3000);
+    }
 
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [winner, isDraw, dispatch]);
 
   return {
-    board,
+    grid,
     status,
     winner,
     isDraw,
@@ -140,8 +139,6 @@ export const useGameState = () => {
     playerSymbol,
     timerCnt,
     handleSquareClick,
-    handleGameEnd,
-    handleGameReset,
     gameId,
   };
 };

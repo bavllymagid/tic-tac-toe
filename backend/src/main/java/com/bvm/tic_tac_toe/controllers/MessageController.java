@@ -4,8 +4,8 @@ import com.bvm.tic_tac_toe.exceptions.exception.InvalidMoveException;
 import com.bvm.tic_tac_toe.exceptions.exception.NoSuchGameFoundException;
 import com.bvm.tic_tac_toe.model.GameMove;
 import com.bvm.tic_tac_toe.model.GameState;
+import com.bvm.tic_tac_toe.model.ResetState;
 import com.bvm.tic_tac_toe.services.GameServiceImpl;
-import com.bvm.tic_tac_toe.utils.BoardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +50,15 @@ public class MessageController {
     public GameState endGame(@DestinationVariable String gameId) {
         gameService.endGame(gameId);
         return null;
+    }
+
+    @MessageMapping("/reset/{gameId}")
+    @SendTo("/topic/game/{gameId}")
+    public ResetState resetGame(@DestinationVariable String gameId,
+                                @DestinationVariable String playerId,
+                                @DestinationVariable Boolean reset) throws NoSuchGameFoundException {
+        gameService.resetGame(gameId);
+
+        return new ResetState(gameId, playerId, reset);
     }
 }
