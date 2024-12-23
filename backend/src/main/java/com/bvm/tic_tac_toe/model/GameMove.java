@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class GameMove {
-    private int row;
-    private int col;
+    private int outerRow;
+    private int outerCol;
+    private int innerRow;
+    private int innerCol;
 }

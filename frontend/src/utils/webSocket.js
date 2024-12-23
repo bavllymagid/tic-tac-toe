@@ -7,7 +7,7 @@ let stompClient = null;
  * @param {function} onMessageReceived - Callback for receiving game state updates.
  */
 export const connectToWebSocket = (gameId, onMessageReceived, onOpen, onActionRecived) => {
-  const socket = new WebSocket("wss://tic-tac-toe.duckdns.org/api/ws");
+  const socket = new WebSocket("ws://localhost:8080/ws");
   stompClient = over(socket);
 
   stompClient.connect({}, () => {
@@ -47,7 +47,7 @@ export const wsJoinGame = (gameId) => {
  * @param {number} row - The row index of the move.
  * @param {number} col - The column index of the move.
  */
-export const processMove = (gameId, row, col) => {
+export const processMove = (gameId, outerRow, outerCol, innerRow, innerCol) => {
   if (!stompClient || !stompClient.connected) {
     console.error("WebSocket is not connected. Cannot send move.");
     return;
@@ -55,7 +55,7 @@ export const processMove = (gameId, row, col) => {
   stompClient.send(
     `/app/move/${gameId}`,
     {}, // Headers (empty in this case)
-    JSON.stringify({ row, col }) // Payload
+    JSON.stringify({ outerRow, outerCol, innerRow, innerCol }) // Payload
   );
 };
 

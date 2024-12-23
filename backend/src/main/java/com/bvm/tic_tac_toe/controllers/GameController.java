@@ -20,8 +20,8 @@ public class GameController {
 
     @CrossOrigin(originPatterns = "*")
     @GetMapping("/create")
-    public ResponseEntity<GameState> createGame() {
-        GameState game = gameService.createGame();
+    public ResponseEntity<GameState> createGame(@RequestParam String mode) {
+        GameState game = gameService.createGame(mode);
         return ResponseEntity.ok(game);
     }
 

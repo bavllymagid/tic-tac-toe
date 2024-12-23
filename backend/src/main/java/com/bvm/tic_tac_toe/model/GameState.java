@@ -3,38 +3,40 @@ package com.bvm.tic_tac_toe.model;
 import lombok.Data;
 
 import java.util.Arrays;
+import java.util.Map;
 
 @Data
 public class GameState {
     private String gameId;
-    private String[][] board;
+    private Board[][] board;
     private String currentPlayer;
     private String winner;
     private boolean isDraw;
     private Player player1;
     private Player player2;
-    private Long lastMove;
+    private GameMove lastMove;
     private int restartCount;
+    private Long lastInteractionTime;
+    private String mode;
 
     public GameState() {
-        this.board = new String[3][3];
-        this.winner = "";
+        this.winner = null;
         this.isDraw = false;
-        this.lastMove = System.currentTimeMillis();
+        this.lastMove = new GameMove();
         this.restartCount = 0;
+        this.lastInteractionTime = System.currentTimeMillis();
+        this.mode = "classic";
     }
 
-    public String toString() {
-        return "GameState{" +
-                "gameId='" + gameId + '\'' +
-                ", board=" + Arrays.deepToString(board) +
-                ", currentPlayer='" + currentPlayer + '\'' +
-                ", winner='" + winner + '\'' +
-                ", isDraw=" + isDraw +
-                ", player1=" + player1 +
-                ", player2=" + player2 +
-                ", lastMove=" + lastMove +
-                ", restartCount=" + restartCount +
-                '}';
+    public void setBoard(Board[][] board) {
+        this.board = board;
+        for (int i = 0; i < this.board.length; i++) {
+            for (int j = 0; j < this.board[i].length; j++) {
+                if (board[i][j] == null) {
+                    this.board[i][j] = new Board();
+                }
+            }
+        }
     }
+
 }

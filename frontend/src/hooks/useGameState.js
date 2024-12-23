@@ -90,7 +90,7 @@ export const useGameState = () => {
       console.log(`Invalid move in game ${gameId}`);
       return;
     }
-    processMove(gameId, row, col);
+    processMove(gameId, 0, 0, row, col);
   };
 
 
