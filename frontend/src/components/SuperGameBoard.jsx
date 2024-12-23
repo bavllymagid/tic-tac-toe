@@ -1,42 +1,44 @@
 import PropTypes from 'prop-types';
-import { GameBoard } from './GameBoard';
 import '../styles/SuperGrid.css';
 
 export const SuperGameBoard = ({ boards, onBoardSquareClick, hasTurn }) => {
-
-  const renderSmallGrid = (i) => {
-    const row = Math.floor(i / 3);
-    const col = i % 3;
-
-    // Determine if this grid should be highlighted
-    const isHighlighted = hasTurn && 
-      hasTurn.innerRow === row && 
-      hasTurn.innerCol === col && 
-      !boards[row][col].complete
-      && hasTurn.innerRow !== -1 && 
-      hasTurn.innerCol !== -1;
-
-      // console.log(hasTurn.row, hasTurn.column, row, col, isHighlighted);
-    return (
-      <div 
-        key={i} 
-        className={`small-grid ${isHighlighted ? 'highlighted' : ''}`}
-      >
-        {!boards[row][col].complete ? (
-          <GameBoard 
-            grid={boards[row][col].grid} 
-            onSquareClick={(subRow, subCol) => onBoardSquareClick(row, col, subRow, subCol)} 
-          />
-        ) : (
-          <div className="small-grid-overlay">{boards[row][col].winner}</div>
-        )}
-      </div>
-    );
-  };
-
   return (
-    <div className="mega-grid">
-      {Array.from({ length: 9 }, (_, i) => renderSmallGrid(i))}
+    <div className="super-board">
+      {boards.map((row, i) =>
+        row.map((_, j) => {
+          const isHighlighted = hasTurn && 
+            hasTurn.innerRow === i && 
+            hasTurn.innerCol === j && 
+            !boards[i][j].complete && 
+            hasTurn.innerRow !== -1 && 
+            hasTurn.innerCol !== -1;
+
+          return (
+            <div 
+              key={`${i}-${j}`}
+              className={`super-grid ${isHighlighted ? 'highlighted' : ''}`}
+            >
+              {!boards[i][j].complete ? (
+                boards[i][j].grid.map((gridRow, gridI) =>
+                  gridRow.map((value, gridJ) => (
+                    <button
+                      key={`${gridI}-${gridJ}`}
+                      className="super-square"
+                      onClick={() => onBoardSquareClick(i, j, gridI, gridJ)}
+                    >
+                      {value}
+                    </button>
+                  ))
+                )
+              ) : (
+                <div className="super-square-overlay">
+                  {boards[i][j].winner}
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
     </div>
   );
 };

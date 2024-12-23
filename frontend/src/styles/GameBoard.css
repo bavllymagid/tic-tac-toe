@@ -1,0 +1,27 @@
+/* GameBoard.css */
+.game-grid {
+  /* Changed from just .grid */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(4px, 1vw, 8px);
+  margin-bottom: clamp(16px, 4vw, 24px);
+  width: min(90vw, 300px);
+  aspect-ratio: 1;
+}
+
+.game-square {
+  /* Changed from just .square */
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid white;
+  font-size: clamp(1rem, 4vw, 3rem);
+  font-weight: bold;
+  color: white;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}

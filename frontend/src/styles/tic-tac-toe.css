@@ -72,42 +72,6 @@
   text-align: center;
 }
 
-/* Game grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(4px, 1vw, 8px);
-  margin-bottom: clamp(16px, 4vw, 24px);
-  width: min(90vw, 300px);
-  aspect-ratio: 1;
-}
-
-/* Grid squares */
-.square {
-  width: 100%;
-  aspect-ratio: 1;
-  border: 2px solid white;
-  font-size: clamp(0rem, 2.5vw, 5rem);
-  font-weight: bold;
-  color: white;
-  background-color: transparent;
-  transition: all 0.2s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.square:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: scale(1.02);
-}
-
-.square:active {
-  transform: scale(0.98);
-}
-
 /* reset or end game buttons */
 .resetOrEnd {
   display: flex;

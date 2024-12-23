@@ -1,48 +1,75 @@
 /* SuperGameBoard.css */
-
-.mega-grid {
+.super-board {
   display: grid;
-  grid-template-columns: repeat(3, auto); /* Auto-sized columns for flexibility */
-  gap: 10px; /* Adjust spacing between small grids */
-  padding: 10px;
-  border: 2px solid white; /* Matches the white border theme in the image */
-  background-color: black;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(6px, 1.5vw, 10px);
+  width: min(90vw, 400px);
+  aspect-ratio: 1;
   box-sizing: border-box;
 }
 
-/* Styling each small grid */
-.small-grid {
-  background-color: black;
-  border: 2px solid white; /* Matches the border in the image */
-  aspect-ratio: 1; /* Ensures grids are square */
-  width: 80px; /* Adjust this size to make it smaller */
-  height: 80px;
-}
-
-.small-grid-overlay{
-  text-align: center;
-  font-size: 2rem;
-  color: white;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  width: 100%;
-  height: 100%;
-}
-
-.small-grid.highlighted {
-  border: 2px solid #ff8c00; /* Yellow highlight, you can change the color */
-  box-shadow: 0 0 10px orangered/* Optional: adds a glow effect */
-}
-
-/* Adjusting GameBoard component */
-.grid {
+.super-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0px;
+  gap: clamp(2px, 0.5vw, 4px);
+  background-color: black;
+  border: 2px solid white;
+  aspect-ratio: 1;
   width: 100%;
-  height: 100%;
+  position: relative;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
+.super-grid.highlighted {
+  border: 2px solid #ff8c00;
+  box-shadow: 0 0 10px orangered;
+}
+
+.super-square {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid white;
+  /* Fixed font size and line height to prevent layout shifts */
+  font-size: min(2vw, 1rem);
+  line-height: 1;
+  font-weight: bold;
+  color: white;
+  background-color: transparent;
+  transition: background-color 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  /* Prevent text from wrapping or overflowing */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.super-square:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.super-square:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.super-square-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  font-size: min(6vw, 3rem);
+  line-height: 1;
+  color: white;
+  font-weight: bold;
+}
