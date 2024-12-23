@@ -24,7 +24,6 @@ public class GameState {
         this.isDraw = false;
         this.lastMove = new GameMove();
         this.restartCount = 0;
-        this.lastInteractionTime = System.currentTimeMillis();
         this.mode = "classic";
     }
 

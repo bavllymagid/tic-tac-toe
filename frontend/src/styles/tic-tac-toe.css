@@ -87,7 +87,7 @@
   width: 100%;
   aspect-ratio: 1;
   border: 2px solid white;
-  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-size: clamp(0rem, 2.5vw, 5rem);
   font-weight: bold;
   color: white;
   background-color: transparent;

@@ -127,12 +127,16 @@ public class GameServiceImpl implements GameService {
 
     @Scheduled(fixedRate = 60000)
     private void checkInActiveGame() {
-        games.forEach((k, v) -> {
-            if (System.currentTimeMillis() - v.getLastInteractionTime() > Duration.ofMinutes(10).toMillis()) {
-                games.remove(k);
-                log.info("Game with id: {} ended due to inactivity", k);
-            }
-        });
+        try{
+            games.forEach((k, v) -> {
+                if (System.currentTimeMillis() - v.getLastInteractionTime() > Duration.ofMinutes(10).toMillis()) {
+                    games.remove(k);
+                    log.info("Game with id: {} ended due to inactivity", k);
+                }
+            });
+        }catch (Exception e){
+            log.error("Error in checkInActiveGame: {}", e.getMessage());
+        }
     }
 
     private void resetGameHelper(GameState gameState) {
@@ -152,7 +156,6 @@ public class GameServiceImpl implements GameService {
         gameState.setWinner(null);
         gameState.setLastMove(new GameMove());
         gameState.setRestartCount(0);
-        gameState.setLastInteractionTime(System.currentTimeMillis());
         games.put(gameState.getGameId(), gameState);
     }
 }

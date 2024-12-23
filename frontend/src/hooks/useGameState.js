@@ -9,6 +9,7 @@ import {
   resetGameState,
   setIsPopupOpen,
   setIsRequester,
+  setMode,
 } from '../store/gameSlice';
 import { connectToWebSocket, disconnectWebSocket, processMove, wsJoinGame, wsEndGame, wsRestartGame } from '../utils/webSocket';
 import { joinGame, endGame} from '../utils/api';
@@ -19,6 +20,7 @@ export const useGameState = () => {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const hasJoinedGame = useRef(false);
+  const hasOtherPlayerJoined = useRef(0);
 
   // Get state from Redux
   const {
@@ -32,11 +34,16 @@ export const useGameState = () => {
     isPopupOpen,
     isRequester,
     mode,
+    lastMove
   } = useSelector(state => state.game);
 
   const handleGameStateUpdate = useCallback((gameState) => {
+    if(gameState.player2!=null && gameState.lastInteractionTime === null && hasOtherPlayerJoined.current <1) {
+      enqueueSnackbar(`Player joined`, { variant: 'info' }, { autoHideDuration: 300 });
+      hasOtherPlayerJoined.current += 1;
+    }
     dispatch(updateGameState(gameState));
-  }, [dispatch]);
+  }, [dispatch, enqueueSnackbar]);
 
   const handleJoinGame = useCallback(async () => {
     try {
@@ -61,7 +68,7 @@ export const useGameState = () => {
       console.log("Joined game super:", game.board);
       dispatch(updateGameState(game));
       dispatch(setPlayerSymbol(player?.symbol));
-      enqueueSnackbar(`Player joined`, { variant: 'info' }, { autoHideDuration: 300 });
+      dispatch(setMode(game.mode));
     } catch (error) {
       console.error(`Error joining game: ${error.message}`);
       enqueueSnackbar(`Error joining game: ${error.message}`, { variant: 'error' }, { autoHideDuration: 1000 });
@@ -74,10 +81,9 @@ export const useGameState = () => {
 
     if (action === "END") {
       endGame(gameId).catch((error) => console.error("Failed to end game:", error));
-      enqueueSnackbar(`Game has ended`, { variant: 'info' }, { autoHideDuration: 1000 });
       wsEndGame(gameId);
       disconnectWebSocket();
-      
+      enqueueSnackbar(`Game has ended`, { variant: 'info' }, { autoHideDuration: 1000 });
       navigate('/');
     }
     else if (action === "RESTART") {
@@ -99,10 +105,11 @@ export const useGameState = () => {
   const handleSuperSquareClick = (row, col, subRow, subCol) => {
     if (winner || superGrid[row][col].grid[subRow][subCol] || currentTurn !== playerSymbol) {
       console.log(`${superGrid[row][col].grid[subRow][subCol]}`)
+      console.log(`${lastMove}`, `${row}`, `${col}`);
       console.log(`Invalid move in game ${gameId}`);
       return;
     }
-    processMove(gameId, row, col, subRow, subCol);
+    processMove(gameId, row, col, subRow, subCol);  
   }
 
   const handleEndGame = useCallback((res) => {
@@ -178,6 +185,7 @@ export const useGameState = () => {
     handlePopupEnd,
     mode,
     superGrid,
-    handleSuperSquareClick
+    handleSuperSquareClick,
+    lastMove 
   };
 };

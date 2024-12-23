@@ -100,7 +100,7 @@ export const {
   updateGameState,
   setIsPopupOpen,
   setIsRequester,
-  setMode,
+  setMode
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

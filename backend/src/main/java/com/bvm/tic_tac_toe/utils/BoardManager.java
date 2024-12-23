@@ -3,10 +3,14 @@ package com.bvm.tic_tac_toe.utils;
 import com.bvm.tic_tac_toe.model.Board;
 import com.bvm.tic_tac_toe.model.GameMove;
 import com.bvm.tic_tac_toe.model.GameState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BoardManager {
+
+    private static final Logger log = LoggerFactory.getLogger(BoardManager.class);
 
     public boolean makeMove(GameState gameState, GameMove gameMove, int size, String mode) {
         int outerRow = gameMove.getOuterRow();
@@ -19,6 +23,7 @@ public class BoardManager {
                 outerCol < 0 || outerCol >= size ||
                 innerRow < 0 || innerRow >= 3 ||
                 innerCol < 0 || innerCol >= 3) {
+            log.info("Invalid move: {}", gameMove);
             return false;
         }
 
@@ -26,9 +31,11 @@ public class BoardManager {
         if (mode.equalsIgnoreCase("super")) {
             int lastInnerCol = gameState.getLastMove().getInnerCol();
             int lastInnerRow = gameState.getLastMove().getInnerRow();
-            if (!gameState.getBoard()[lastInnerRow][lastInnerCol].isComplete()) {
-                if(outerRow != gameState.getLastMove().getInnerRow() || outerCol != gameState.getLastMove().getInnerCol()){
-                    return false;
+            if(lastInnerRow != -1 && lastInnerCol != -1){
+                if (!gameState.getBoard()[lastInnerRow][lastInnerCol].isComplete()) {
+                    if(outerRow != gameState.getLastMove().getInnerRow() || outerCol != gameState.getLastMove().getInnerCol()){
+                        return false;
+                    }
                 }
             }
         }else{

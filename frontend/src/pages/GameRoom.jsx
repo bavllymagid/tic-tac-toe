@@ -24,7 +24,8 @@ export const GameRoom = () => {
     handlePopupRestart,
     handlePopupEnd,
     mode,
-    handleSuperSquareClick
+    handleSuperSquareClick,
+    lastMove
   } = useGameState();
 
   const handleGameIdClicked = useCallback(() => {
@@ -55,6 +56,7 @@ export const GameRoom = () => {
         <SuperGameBoard 
           boards={superGrid} 
           onBoardSquareClick={handleSuperSquareClick}
+          hasTurn={lastMove}
         />
       ) : (
         <GameBoard grid={grid} onSquareClick={handleSquareClick} />
