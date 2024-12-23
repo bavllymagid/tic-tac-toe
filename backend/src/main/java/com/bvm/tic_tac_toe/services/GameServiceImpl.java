@@ -114,7 +114,7 @@ public class GameServiceImpl implements GameService {
         gameState.setRestartCount(gameState.getRestartCount() + 1);
 
         if (gameState.getRestartCount() == 2) {
-            resetGame(gameState, gameState.getBoard().length);
+            resetGameHelper(gameState);
             return 2;
         }
         return gameState.getRestartCount();
@@ -135,7 +135,7 @@ public class GameServiceImpl implements GameService {
         });
     }
 
-    private void resetGame(GameState gameState, int size) {
+    private void resetGameHelper(GameState gameState) {
         Random random = new Random();
         gameState.setPlayer1(new Player(gameState.getPlayer1().getId(),
                 random.nextBoolean() ? "X" : "O"));
