@@ -3,13 +3,27 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   grid: Array(3).fill(Array(3).fill("")),
+  superGrid: Array.from({ length: 3 }, () =>
+    Array.from({ length: 3 }, () => ({
+      grid: Array.from({ length: 3 }, () => Array(3).fill("")),
+      winner: null,
+      isComplete: false,
+    }))
+  ),  
   status: "",
   winner: null,
   isDraw: false,
   currentTurn: "",
   playerSymbol: "",
+  lastMove: {
+    row: -1,
+    col: -1,
+    subRow: -1,
+    subCol: -1,
+  },
   isPopupOpen: false,
   isRequester: false,
+  mode: "classic",
 };
 
 const gameSlice = createSlice({
@@ -40,15 +54,21 @@ const gameSlice = createSlice({
     setIsRequester: (state, action) => {
       state.isRequester = action.payload;
     },
+    setMode: (state, action) => {
+      state.mode = action.payload;
+    },
     resetGameState: () => {
       return initialState;
     },
     updateGameState: (state, action) => {
       const gameState = action.payload;
       state.grid = gameState.board[0][0].grid;
+      state.superGrid = gameState.board;
+      console.log("game super", gameState.board);
       state.winner = gameState.winner;
       state.currentTurn = gameState.currentPlayer;
       state.isDraw = gameState.draw;
+      state.lastMove = gameState.lastMove;
       if(state.isDraw) {
         state.status = 'Draw';
       }
@@ -80,6 +100,7 @@ export const {
   updateGameState,
   setIsPopupOpen,
   setIsRequester,
+  setMode,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

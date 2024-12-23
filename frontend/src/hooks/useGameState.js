@@ -25,11 +25,13 @@ export const useGameState = () => {
     grid,
     status,
     winner,
+    superGrid,
     isDraw,
     currentTurn,
     playerSymbol,
     isPopupOpen,
     isRequester,
+    mode,
   } = useSelector(state => state.game);
 
   const handleGameStateUpdate = useCallback((gameState) => {
@@ -56,6 +58,7 @@ export const useGameState = () => {
         player = game.player2;
         sessionStorage.setItem("player", JSON.stringify(player));
       }
+      console.log("Joined game super:", game.board);
       dispatch(updateGameState(game));
       dispatch(setPlayerSymbol(player?.symbol));
       enqueueSnackbar(`Player joined`, { variant: 'info' }, { autoHideDuration: 300 });
@@ -93,6 +96,14 @@ export const useGameState = () => {
     processMove(gameId, 0, 0, row, col);
   };
 
+  const handleSuperSquareClick = (row, col, subRow, subCol) => {
+    if (winner || superGrid[row][col].grid[subRow][subCol] || currentTurn !== playerSymbol) {
+      console.log(`${superGrid[row][col].grid[subRow][subCol]}`)
+      console.log(`Invalid move in game ${gameId}`);
+      return;
+    }
+    processMove(gameId, row, col, subRow, subCol);
+  }
 
   const handleEndGame = useCallback((res) => {
     if (res == 0) {
@@ -165,5 +176,8 @@ export const useGameState = () => {
     isRequester,
     handlePopupRestart,
     handlePopupEnd,
+    mode,
+    superGrid,
+    handleSuperSquareClick
   };
 };

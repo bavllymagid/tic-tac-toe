@@ -1,4 +1,5 @@
 import { GameBoard } from "../components/GameBoard";
+import { SuperGameBoard } from "../components/SuperGameBoard";
 import { useGameState } from "../hooks/useGameState";
 import { useCallback } from "react";
 import { useSnackbar } from "notistack";
@@ -10,6 +11,7 @@ export const GameRoom = () => {
   const {
     winner,
     grid,
+    superGrid,
     playerSymbol,
     isDraw,
     status,
@@ -21,6 +23,8 @@ export const GameRoom = () => {
     isRequester,
     handlePopupRestart,
     handlePopupEnd,
+    mode,
+    handleSuperSquareClick
   } = useGameState();
 
   const handleGameIdClicked = useCallback(() => {
@@ -47,7 +51,14 @@ export const GameRoom = () => {
         </span>
       </div>
       <div className="status">{status}</div>
-      <GameBoard grid={grid} onSquareClick={handleSquareClick} />
+      {mode === "super" ? ( 
+        <SuperGameBoard 
+          boards={superGrid} 
+          onBoardSquareClick={handleSuperSquareClick}
+        />
+      ) : (
+        <GameBoard grid={grid} onSquareClick={handleSquareClick} />
+      )}
       <div className="status">Player: {playerSymbol}</div>
       {(winner || isDraw) && (
         <div className="resetOrEnd">

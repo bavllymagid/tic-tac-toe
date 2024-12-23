@@ -1,0 +1,40 @@
+/* SuperGameBoard.css */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: black; /* Matches the background in the image */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: auto; /* Enables scrolling if the grid overflows */
+}
+
+.mega-grid {
+  display: grid;
+  grid-template-columns: repeat(3, auto); /* Auto-sized columns for flexibility */
+  gap: 10px; /* Adjust spacing between small grids */
+  padding: 10px;
+  border: 2px solid white; /* Matches the white border theme in the image */
+  background-color: black;
+  box-sizing: border-box;
+}
+
+/* Styling each small grid */
+.small-grid {
+  background-color: black;
+  border: 2px solid white; /* Matches the border in the image */
+  aspect-ratio: 1; /* Ensures grids are square */
+  width: 80px; /* Adjust this size to make it smaller */
+  height: 80px;
+}
+
+/* Adjusting GameBoard component */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0px;
+  width: 100%;
+  height: 100%;
+}
+

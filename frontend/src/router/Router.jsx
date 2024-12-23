@@ -7,7 +7,7 @@ export const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" Component={TicTacToe} />
-        <Route path="/game/:gameId" Component={GameRoom} />
+        <Route path="/game/:gameId/:mode" element={<GameRoom />} />
       </Routes>
     </BrowserRouter>
   );

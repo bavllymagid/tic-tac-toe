@@ -6,8 +6,8 @@ export const GameSetup = ({ joinInput, onJoinInputChange, onCreateGame, onJoinGa
     <div className="setup">
       <h3>Tic Tac Toe</h3>
       <div className="enter-modes">
-        <button onClick={onCreateGame}>Super Mode</button>
-        <button onClick={onCreateGame}>Classic Mode</button>
+        <button onClick={()=>onCreateGame("super")}>Super Mode</button>
+        <button onClick={()=>onCreateGame("classic")}>Classic Mode</button>
       </div>
       <br />
       <span>OR</span>
