@@ -4,8 +4,13 @@ import PropTypes from 'prop-types';
 export const GameSetup = ({ joinInput, onJoinInputChange, onCreateGame, onJoinGame }) => {
   return (
     <div className="setup">
-      <button onClick={onCreateGame}>Create Game</button>
+      <h3>Tic Tac Toe</h3>
+      <div className="enter-modes">
+        <button onClick={onCreateGame}>Super Mode</button>
+        <button onClick={onCreateGame}>Classic Mode</button>
+      </div>
       <br />
+      <span>OR</span>
       <div className="joinComp">
         <input
           type="text"

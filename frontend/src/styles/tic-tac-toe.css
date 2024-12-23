@@ -12,6 +12,40 @@
   margin: 0 auto;
 }
 
+.setup h3 {
+  color: white;
+  font-size: clamp(0.5rem, 3vw, 4rem);
+  font-weight: bold;
+  margin-bottom: clamp(12px, 5vw, 5px); /* Added margin for spacing */
+  text-align: center;
+}
+
+.setup span {
+  color: #ff8c00;
+  font-size: clamp(0.5rem, 2vw, 3rem);
+  text-align: center;
+}
+
+.enter-modes {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  margin-bottom: clamp(16px, 4vw, 24px);
+  width: 100%; /* Make buttons align consistently */
+  justify-content: center;
+}
+
+.enter-modes button {
+  border: white 2px solid;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-color: transparent;
+  color: white;
+  text-align: center;
+}
+
 /* Game ID styles */
 .gameId {
   color: white;
