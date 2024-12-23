@@ -33,7 +33,7 @@ export const GameRoom = () => {
       .writeText(gameId)
       .then(() => {
         enqueueSnackbar("Game ID copied to clipboard", {
-          variant: "success", 
+          variant: "success",
         }, { autoHideDuration: 1000 });
       })
       .catch(() => {
@@ -52,15 +52,15 @@ export const GameRoom = () => {
         </span>
       </div>
       <div className="status">{status}</div>
-      {mode === "super" ? ( 
-        <SuperGameBoard 
-          boards={superGrid} 
+      {mode === "super" ? (
+        <SuperGameBoard
+          boards={superGrid}
           onBoardSquareClick={handleSuperSquareClick}
           hasTurn={lastMove}
         />
-      ) : (
+      ) : mode === "classic" ? (
         <GameBoard grid={grid} onSquareClick={handleSquareClick} />
-      )}
+      ) : null}
       <div className="status">Player: {playerSymbol}</div>
       {(winner || isDraw) && (
         <div className="resetOrEnd">

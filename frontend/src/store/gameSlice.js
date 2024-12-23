@@ -23,7 +23,7 @@ const initialState = {
   },
   isPopupOpen: false,
   isRequester: false,
-  mode: "classic",
+  mode: "",
 };
 
 const gameSlice = createSlice({
