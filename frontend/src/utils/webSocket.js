@@ -1,14 +1,41 @@
 import { over } from "stompjs";
 
 let stompClient = null;
+let reconnectAttempts = 0;
+const maxReconnectAttempts = 10;
+const reconnectDelay = 2000;
+
 /**
  * Establish a WebSocket connection and subscribe to game updates.
  * @param {string} gameId - The ID of the game to subscribe to.
  * @param {function} onMessageReceived - Callback for receiving game state updates.
  */
 export const connectToWebSocket = (gameId, onMessageReceived, onOpen, onActionRecived) => {
-  const socket = new WebSocket("ws://tic-tac-toe.duckdns.org/api/ws");
+  const socket = new WebSocket("wss://tic-tac-toe.duckdns.org/api/ws");
   stompClient = over(socket);
+
+
+  const reconnect = () => {
+    if (reconnectAttempts < maxReconnectAttempts) {
+      setTimeout(() => {
+        console.log(`Reconnecting... Attempt ${reconnectAttempts + 1}`);
+        reconnectAttempts++;
+        connectToWebSocket(gameId, onMessageReceived, onOpen, onActionRecived);
+      }, Math.min(reconnectDelay * reconnectAttempts, 10000)); // Cap delay at 10 seconds
+    } else {
+      console.error("Max reconnection attempts reached. Could not reconnect to WebSocket.");
+    }
+  };
+
+  socket.onclose = () => {
+    console.warn("WebSocket connection closed. Attempting to reconnect...");
+    reconnect();
+  };
+
+  socket.onerror = (error) => {
+    console.error("WebSocket encountered an error:", error);
+    socket.close(); // Trigger `onclose` to handle reconnection
+  };
 
   stompClient.connect({}, () => {
     console.log("Connected to WebSocket");
@@ -86,4 +113,8 @@ export const wsRestartGame = (gameId) => {
     `/app/reset/${gameId}`,
     {},
   );
+}
+
+export const checkConnection = () => {
+  return stompClient.connected;
 }

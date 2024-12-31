@@ -18,9 +18,10 @@ export const useGameState = () => {
   const { gameId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const hasJoinedGame = useRef(false);
   const hasOtherPlayerJoined = useRef(0);
+  const snackbarRef = useRef(null); // Store the last snackbar key
 
   // Get state from Redux
   const {
@@ -37,13 +38,23 @@ export const useGameState = () => {
     lastMove
   } = useSelector(state => state.game);
 
+  const showSnackbar = useCallback((message, options) => {
+    // Dismiss the last snackbar if it exists
+    if (snackbarRef.current) {
+      closeSnackbar(snackbarRef.current);
+    }
+
+    // Enqueue the new snackbar and store its key
+    snackbarRef.current = enqueueSnackbar(message, options);
+  }, [closeSnackbar, enqueueSnackbar]);
+
   const handleGameStateUpdate = useCallback((gameState) => {
     if(gameState.player2!=null && gameState.lastInteractionTime === null && hasOtherPlayerJoined.current <1) {
-      enqueueSnackbar(`Player joined`, { variant: 'info' }, { autoHideDuration: 300 });
+      showSnackbar(`Player joined`, { variant: 'info', autoHideDuration: 1000 });
       hasOtherPlayerJoined.current += 1;
     }
     dispatch(updateGameState(gameState));
-  }, [dispatch, enqueueSnackbar]);
+  }, [dispatch, showSnackbar]);
 
   const handleJoinGame = useCallback(async () => {
     try {
@@ -71,10 +82,10 @@ export const useGameState = () => {
       dispatch(setMode(game.mode));
     } catch (error) {
       console.error(`Error joining game: ${error.message}`);
-      enqueueSnackbar(`Error joining game: ${error.message}`, { variant: 'error' }, { autoHideDuration: 1000 });
+      showSnackbar(`Error joining game: ${error.message}`, { variant: 'error', autoHideDuration: 1000 });
       navigate('/');
     }
-  }, [gameId, dispatch, enqueueSnackbar, navigate]);
+  }, [gameId, dispatch, showSnackbar, navigate]);
 
   const resetGame = useCallback((action) => {
     if (!gameId) return;
@@ -83,7 +94,7 @@ export const useGameState = () => {
       endGame(gameId).catch((error) => console.error("Failed to end game:", error));
       wsEndGame(gameId);
       disconnectWebSocket();
-      enqueueSnackbar(`Game has ended`, { variant: 'info' }, { autoHideDuration: 1000 });
+      showSnackbar(`Game has ended`, { variant: 'info', autoHideDuration: 1000 });
       navigate('/');
     }
     else if (action === "RESTART") {
@@ -92,7 +103,7 @@ export const useGameState = () => {
       handleJoinGame();
     }
     dispatch(resetGameState());
-  }, [gameId, dispatch, enqueueSnackbar, navigate, handleJoinGame]);
+  }, [gameId, dispatch, showSnackbar, navigate, handleJoinGame]);
 
   const handleSquareClick = (row, col) => {
     if ( winner || grid[row][col] || currentTurn !== playerSymbol) {
