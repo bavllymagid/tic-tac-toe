@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8080/tic-tac-toe";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export const createGame = async (mode) => {
   const response = await fetch(`${API_BASE}/create?mode=${mode}`);

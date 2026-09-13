@@ -4,14 +4,14 @@ let stompClient = null;
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 10;
 const reconnectDelay = 2000;
-
+const WEBSOCKET_BASE = import.meta.env.VITE_WEBSOCKET_BASE_URL;
 /**
  * Establish a WebSocket connection and subscribe to game updates.
  * @param {string} gameId - The ID of the game to subscribe to.
  * @param {function} onMessageReceived - Callback for receiving game state updates.
  */
 export const connectToWebSocket = (gameId, onMessageReceived, onOpen, onActionRecived) => {
-  const socket = new WebSocket("ws://localhost:8080/ws");
+  const socket = new WebSocket(`${WEBSOCKET_BASE}/ws`);
   stompClient = over(socket);
 
 
