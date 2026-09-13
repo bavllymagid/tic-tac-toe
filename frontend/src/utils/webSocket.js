@@ -11,7 +11,7 @@ const reconnectDelay = 2000;
  * @param {function} onMessageReceived - Callback for receiving game state updates.
  */
 export const connectToWebSocket = (gameId, onMessageReceived, onOpen, onActionRecived) => {
-  const socket = new WebSocket("wss://tic-tac-toe.duckdns.org/api/ws");
+  const socket = new WebSocket("ws://localhost:8080/ws");
   stompClient = over(socket);
 
 

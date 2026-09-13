@@ -34,8 +34,16 @@ export const useGameManager = () => {
   const handleJoinGame = async () => {
     try {
       const gameState = await joinGame(joinInput);
-      sessionStorage.setItem("player", JSON.stringify(gameState.player2));
-      navigate(`/game/${gameState.gameId}/${mode}`);
+
+      sessionStorage.setItem(
+          "player",
+          JSON.stringify(gameState.player2)
+      );
+
+      dispatch(setPlayerSymbol(gameState.player2?.symbol));
+      dispatch(setMode(gameState.mode));
+
+      navigate(`/game/${gameState.gameId}/${gameState.mode}`);
     } catch (error) {
       console.error("Error joining game:", error);
     }
